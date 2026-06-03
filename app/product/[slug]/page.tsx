@@ -38,7 +38,7 @@ const PLACEHOLDER: Record<string, string> = {
 };
 
 const CAT_NAME: Record<string, string> = {
-  etransport: 'Електротранспорт',
+  etransport: 'Транспорт',
   chemistry: 'Автохімія та хімія',
   tools: 'Електроінструмент',
 };

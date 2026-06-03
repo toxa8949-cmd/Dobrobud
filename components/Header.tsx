@@ -6,7 +6,7 @@ import { useCart } from '@/lib/cart';
 // Структура каталогу для випадайки
 const CATALOG = [
   {
-    title: 'Електротранспорт',
+    title: 'Транспорт',
     type: 'etransport',
     items: [
       'Електроскутери', 'Електровелосипеди', 'Електросамокати',
@@ -52,7 +52,7 @@ export default function Header() {
           onMouseEnter={() => setCatOpen(true)}
           onMouseLeave={() => setCatOpen(false)}
         >
-          <button className="nav-catalog-btn">Каталог ▾</button>
+          <a className="nav-catalog-btn" href="/catalog">Каталог ▾</a>
           {catOpen && (
             <div className="mega">
               {CATALOG.map((col) => (

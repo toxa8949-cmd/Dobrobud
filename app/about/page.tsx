@@ -53,7 +53,7 @@ export default function AboutPage() {
         <div className="about-cats">
           <a href="/catalog/etransport" className="about-cat">
             <span>⚡</span>
-            <div><strong>Електротранспорт</strong><span>Скутери, велосипеди, самокати</span></div>
+            <div><strong>Транспорт</strong><span>Скутери, велосипеди, самокати</span></div>
           </a>
           <a href="/catalog/chemistry" className="about-cat">
             <span>🧴</span>

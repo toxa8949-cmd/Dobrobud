@@ -16,7 +16,7 @@ interface AdminProduct {
 
 const TYPES = [
   { value: '', label: 'Усі категорії' },
-  { value: 'etransport', label: 'Електротранспорт' },
+  { value: 'etransport', label: 'Транспорт' },
   { value: 'chemistry', label: 'Автохімія' },
   { value: 'tools', label: 'Інструмент' },
 ];

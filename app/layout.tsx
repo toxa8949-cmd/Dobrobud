@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div>
                 <h4>Каталог</h4>
                 <a href="/catalog/chemistry">Автохімія та хімія</a>
-                <a href="/catalog/etransport">Електротранспорт</a>
+                <a href="/catalog/etransport">Транспорт</a>
                 <a href="/catalog/tools">Електроінструмент</a>
               </div>
               <div>

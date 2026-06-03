@@ -13,11 +13,11 @@ export const revalidate = 3600;
 
 const META: Record<CategoryType, { title: string; tag: string; heading: string; sub: string; glyph: string }> = {
   etransport: {
-    title: 'Електротранспорт',
-    tag: 'Рух без палива',
+    title: 'Транспорт',
+    tag: 'Рух — це життя',
     heading: 'Електроскутери, велосипеди та самокати',
-    sub: 'Великий вибір електротранспорту й велотоварів з доставкою по Україні',
-    glyph: '⚡',
+    sub: 'Великий вибір транспорту й велотоварів з доставкою по Україні',
+    glyph: '🚲',
   },
   chemistry: {
     title: 'Автохімія та хімія',

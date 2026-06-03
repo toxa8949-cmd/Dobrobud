@@ -86,7 +86,7 @@ export default async function HomePage() {
 
       {/* Плитки категорій */}
       <section className="mcats">
-        {cat('etransport', '/catalog/etransport', '⚡', 'Електротранспорт', '#dbeafe')}
+        {cat('etransport', '/catalog/etransport', '⚡', 'Транспорт', '#dbeafe')}
         {cat('chemistry', '/catalog/chemistry', '🧴', 'Автохімія', '#fce7f3')}
         {cat('tools', '/catalog/tools', '🔧', 'Інструмент', '#fef3c7')}
         {cat('chemistry', '/catalog/chemistry?sub=Моторні оливи', '🛢️', 'Оливи', '#f3e8ff')}
@@ -124,7 +124,7 @@ export default async function HomePage() {
       {/* Рядки товарів */}
       {h.deals.length > 0 && <ProductRow title="🔥 Хіти продажів" href="/catalog/chemistry?sort=price-asc" products={h.deals} />}
       <ProductRow title="Автохімія та хімія" href="/catalog/chemistry" products={h.chemistry} />
-      <ProductRow title="Електротранспорт" href="/catalog/etransport" products={h.etransport} />
+      <ProductRow title="Транспорт" href="/catalog/etransport" products={h.etransport} />
       <ProductRow title="Електроінструмент" href="/catalog/tools" products={h.tools} />
 
       {/* Бренди */}
