@@ -579,7 +579,7 @@ a { color: inherit; text-decoration: none; }
   background: linear-gradient(135deg, #27500a, #1c3d06); border: none; border-radius: 20px;
   padding: 16px; margin-bottom: 24px;
 }
-.home-hero-top { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 12px; align-items: stretch; }
+.home-hero-top { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 12px; align-items: start; }
 
 /* TikTok міні-блок усередині */
 .hh-tiktok {
@@ -594,15 +594,6 @@ a { color: inherit; text-decoration: none; }
 /* Промо стовпчик усередині */
 .hh-promos { display: flex; flex-direction: column; gap: 12px; }
 .hh-promos .promo-side { border-radius: 14px; }
-.hh-allcats {
-  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25);
-  border-radius: 14px; padding: 16px; color: #fff;
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 14px; font-weight: 600; flex: 1; min-height: 52px;
-  transition: background .14s;
-}
-.hh-allcats:hover { background: rgba(255,255,255,.2); }
-.hh-allcats span { font-size: 18px; }
 
 /* Категорії-міні-блоки всередині */
 .hh-cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
