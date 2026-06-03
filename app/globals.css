@@ -435,3 +435,44 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 520px) {
   .bento, .grid { grid-template-columns: 1fr; }
 }
+
+/* ── Admin ── */
+.admin-login { max-width: 360px; margin: 80px auto; display: flex; flex-direction: column; gap: 12px; text-align: center; }
+.admin-login h1 { font-size: 24px; font-weight: 700; }
+.admin-login p { color: var(--muted); font-size: 14px; }
+.admin-login input { padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: 15px; }
+.admin-login button { padding: 12px; background: var(--green-bright); color: #fff; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; }
+.admin-login button:disabled { opacity: .6; }
+
+.admin { max-width: 1100px; margin: 0 auto; padding: 24px 0; }
+.admin-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 18px; }
+.admin-head h1 { font-size: 22px; font-weight: 700; }
+.admin-count { color: var(--muted); font-size: 14px; }
+
+.admin-toolbar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 18px; padding: 14px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); }
+.admin-toolbar select, .admin-toolbar input[type="text"], .admin-toolbar input:not([type]) { padding: 9px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); font-size: 14px; }
+.admin-toolbar input { flex: 1; min-width: 180px; }
+.admin-check { display: flex; align-items: center; gap: 6px; font-size: 14px; color: var(--muted); white-space: nowrap; }
+.admin-check input { width: auto; flex: none; }
+.admin-toolbar button { padding: 9px 16px; border: 1px solid var(--line); background: #fff; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; }
+.admin-toolbar button:hover { border-color: var(--green-bright); }
+.admin-batch { background: var(--green-bright) !important; color: #fff; border-color: var(--green-bright) !important; }
+.admin-batch:disabled { opacity: .7; }
+
+.admin-list { display: flex; flex-direction: column; gap: 8px; }
+.admin-row { display: flex; gap: 14px; align-items: flex-start; padding: 14px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); }
+.admin-row-main { flex: 1; min-width: 0; }
+.admin-row-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.admin-row-meta { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.admin-has-desc { color: var(--green); }
+.admin-no-desc { color: #c2410c; }
+.admin-row-desc { font-size: 13px; color: var(--ink); line-height: 1.5; background: var(--bg); padding: 8px 10px; border-radius: var(--radius-sm); white-space: pre-wrap; }
+.admin-gen-btn { padding: 9px 14px; border: 1px solid var(--green-bright); background: #fff; color: var(--green); border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.admin-gen-btn:hover { background: var(--green-bright); color: #fff; }
+.admin-gen-btn:disabled { opacity: .6; cursor: default; }
+
+.admin-pager { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; }
+.admin-pager button { padding: 9px 16px; border: 1px solid var(--line); background: #fff; border-radius: var(--radius-sm); cursor: pointer; }
+.admin-pager button:disabled { opacity: .4; cursor: default; }
+
+.admin-err { color: #c2410c; font-size: 14px; background: #fff4ed; padding: 10px 14px; border-radius: var(--radius-sm); margin-bottom: 12px; }
