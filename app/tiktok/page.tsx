@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { getTikTokProducts } from '@/lib/supabase';
 import TikTokCard from '@/components/TikTokCard';
 
-export const revalidate = 600;
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Товари з TikTok — Добробуд',

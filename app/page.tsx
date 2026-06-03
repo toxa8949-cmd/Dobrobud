@@ -3,7 +3,7 @@ import ProductRow from '@/components/ProductRow';
 import TikTokCard from '@/components/TikTokCard';
 import HeroSlider from '@/components/HeroSlider';
 
-export const revalidate = 3600;
+export const revalidate = 60;
 
 const fmtCount = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
 
