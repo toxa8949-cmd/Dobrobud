@@ -14,21 +14,43 @@ export default function CatalogFilters({ options }: { options: FilterOptions }) 
       const params = new URLSearchParams(sp.toString());
       if (value) params.set(key, value);
       else params.delete(key);
-      params.delete('page'); // скидаємо на 1 сторінку при зміні фільтра
+      params.delete('page');
       router.push(`${pathname}?${params.toString()}`);
     },
     [router, pathname, sp]
   );
 
   const brand = sp.get('brand') ?? '';
+  const sub = sp.get('sub') ?? '';
   const maxPrice = Number(sp.get('maxPrice')) || options.priceMax;
   const inStockOnly = sp.get('inStock') === '1';
-  const sort = sp.get('sort') ?? 'featured';
 
   const reset = () => router.push(pathname);
+  const fmt = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
 
   return (
     <aside className="filters">
+      {options.subcatCounts.length > 0 && (
+        <div className="filter-group">
+          <label>Категорії</label>
+          <ul className="filter-cats">
+            <li>
+              <button className={!sub ? 'active' : ''} onClick={() => update('sub', '')}>
+                <span>Усі товари</span>
+              </button>
+            </li>
+            {options.subcatCounts.map((c) => (
+              <li key={c.name}>
+                <button className={sub === c.name ? 'active' : ''} onClick={() => update('sub', c.name)}>
+                  <span>{c.name}</span>
+                  <span className="fc-count">{c.count}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       <div className="filter-group">
         <label>Бренд</label>
         <select value={brand} onChange={(e) => update('brand', e.target.value)}>
@@ -41,7 +63,7 @@ export default function CatalogFilters({ options }: { options: FilterOptions }) 
 
       {options.priceMax > 0 && (
         <div className="filter-group">
-          <label>Ціна до: {new Intl.NumberFormat('uk-UA').format(maxPrice)} ₴</label>
+          <label>Ціна до: {fmt(maxPrice)} ₴</label>
           <input
             type="range"
             min={options.priceMin}
@@ -53,15 +75,6 @@ export default function CatalogFilters({ options }: { options: FilterOptions }) 
           />
         </div>
       )}
-
-      <div className="filter-group">
-        <label>Сортування</label>
-        <select value={sort} onChange={(e) => update('sort', e.target.value)}>
-          <option value="featured">Спочатку популярні</option>
-          <option value="price-asc">Дешевші спочатку</option>
-          <option value="price-desc">Дорожчі спочатку</option>
-        </select>
-      </div>
 
       <label className="checkbox">
         <input

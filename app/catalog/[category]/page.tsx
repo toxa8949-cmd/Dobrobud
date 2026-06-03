@@ -7,7 +7,7 @@ import {
 } from '@/lib/supabase';
 import CatalogGrid from '@/components/CatalogGrid';
 import CatalogFiltersComponent from '@/components/CatalogClient';
-import SubcatTiles from '@/components/SubcatTiles';
+import CatalogSort from '@/components/CatalogSort';
 
 export const revalidate = 3600;
 
@@ -89,11 +89,6 @@ export default async function CatalogPage({
 
   return (
     <>
-      <div className="section-head">
-        <h2>{META[type].title}</h2>
-        <span style={{ color: 'var(--muted)', fontSize: 14 }}>{total} товарів</span>
-      </div>
-
       <div className="catalog-banner">
         <div>
           <span className="cb-tag">{META[type].tag}</span>
@@ -103,11 +98,10 @@ export default async function CatalogPage({
         <span className="cb-glyph">{META[type].glyph}</span>
       </div>
 
-      <SubcatTiles items={options.subcatCounts} type={type} />
-
       <div className="catalog-layout">
         <CatalogFiltersComponent options={options} />
         <div className="catalog-main">
+          <CatalogSort total={total} />
           <CatalogGrid products={products} />
 
           {totalPages > 1 && (
