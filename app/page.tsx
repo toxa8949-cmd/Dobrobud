@@ -35,6 +35,27 @@ export default async function HomePage() {
 
   return (
     <>
+      {/* TikTok вітрина — найперше, що бачить відвідувач */}
+      {h.tiktok.length > 0 && (
+        <section className="tiktok-hero">
+          <div className="tiktok-hero-head">
+            <div className="tiktok-hero-title">
+              <span className="tiktok-badge big">🔥 TikTok</span>
+              <h2>Бачили у нашому TikTok?</h2>
+              <p>Усі товари з відео — тут. Обирайте та замовляйте прямо зараз.</p>
+            </div>
+            <a className="tiktok-hero-btn" href="/tiktok">Дивитися всі →</a>
+          </div>
+          <div className="prow-scroll tiktok-hero-scroll">
+            {h.tiktok.map((p) => (
+              <div className="prow-item" key={p.id}>
+                <TikTokCard p={p} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Hero + промо */}
       <section className="home-top">
         <HeroSlider />
@@ -59,27 +80,6 @@ export default async function HomePage() {
         {cat('tools', '/catalog/tools', '🔧', 'Інструмент', '#fef3c7')}
         {cat('chemistry', '/catalog/chemistry?sub=Моторні оливи', '🛢️', 'Оливи', '#f3e8ff')}
       </section>
-
-      {/* TikTok вітрина */}
-      {h.tiktok.length > 0 && (
-        <section className="tiktok-section">
-          <div className="tiktok-head">
-            <div className="tiktok-title">
-              <span className="tiktok-badge">TikTok</span>
-              <h2>Товари з нашого TikTok</h2>
-              <p>Те, що ви бачили у відео — замовляйте прямо тут</p>
-            </div>
-            <a className="tiktok-all" href="/tiktok">Усі товари →</a>
-          </div>
-          <div className="prow-scroll">
-            {h.tiktok.map((p) => (
-              <div className="prow-item" key={p.id}>
-                <TikTokCard p={p} />
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
 
       {/* Популярні категорії з фото */}
       {h.topSubcats.length > 0 && (
