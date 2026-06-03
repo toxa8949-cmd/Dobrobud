@@ -4,9 +4,12 @@ import { createClient } from '@supabase/supabase-js';
 export const runtime = 'nodejs';
 
 function checkAuth(req: NextRequest): boolean {
+  const login = process.env.ADMIN_LOGIN;
   const pass = process.env.ADMIN_PASSWORD;
-  if (!pass) return true;
-  return req.headers.get('x-admin-password') === pass;
+  if (!login && !pass) return true; // якщо нічого не задано — відкрито (локалка)
+  const okLogin = !login || req.headers.get('x-admin-login') === login;
+  const okPass = !pass || req.headers.get('x-admin-password') === pass;
+  return okLogin && okPass;
 }
 
 function db() {

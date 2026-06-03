@@ -22,6 +22,7 @@ const TYPES = [
 ];
 
 export default function AdminClient() {
+  const [login, setLogin] = useState('');
   const [pass, setPass] = useState('');
   const [authed, setAuthed] = useState(false);
 
@@ -41,8 +42,8 @@ export default function AdminClient() {
   const [batchProgress, setBatchProgress] = useState({ done: 0, total: 0 });
 
   const headers = useCallback(
-    () => ({ 'Content-Type': 'application/json', 'x-admin-password': pass }),
-    [pass]
+    () => ({ 'Content-Type': 'application/json', 'x-admin-login': login, 'x-admin-password': pass }),
+    [login, pass]
   );
 
   const load = useCallback(
@@ -157,13 +158,22 @@ export default function AdminClient() {
     return (
       <div className="admin-login">
         <h1>Адмін-панель</h1>
-        <p>Введіть пароль для доступу</p>
+        <p>Введіть логін і пароль для доступу</p>
+        <input
+          type="text"
+          value={login}
+          onChange={(e) => setLogin(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && load(1)}
+          placeholder="Логін"
+          autoComplete="username"
+        />
         <input
           type="password"
           value={pass}
           onChange={(e) => setPass(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && load(1)}
           placeholder="Пароль"
+          autoComplete="current-password"
         />
         <button onClick={() => load(1)} disabled={loading}>
           {loading ? 'Перевірка…' : 'Увійти'}

@@ -5,10 +5,12 @@ export const maxDuration = 60;
 
 // Перевірка адмін-доступу
 function checkAuth(req: NextRequest): boolean {
+  const login = process.env.ADMIN_LOGIN;
   const pass = process.env.ADMIN_PASSWORD;
-  if (!pass) return true; // якщо пароль не заданий — доступ відкритий (для локалки)
-  const header = req.headers.get('x-admin-password');
-  return header === pass;
+  if (!login && !pass) return true;
+  const okLogin = !login || req.headers.get('x-admin-login') === login;
+  const okPass = !pass || req.headers.get('x-admin-password') === pass;
+  return okLogin && okPass;
 }
 
 const SYSTEM_PROMPT = `Ти — копірайтер українського інтернет-магазину "Добробуд" (електротранспорт, велосипеди, автохімія, інструмент).
