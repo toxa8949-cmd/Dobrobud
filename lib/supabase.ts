@@ -295,6 +295,7 @@ export interface FilterOptions {
   brands: string[];
   subcategories: string[];
   subcatCounts: { name: string; count: number }[];
+  sizeCounts: { name: string; count: number }[];
   priceMin: number;
   priceMax: number;
 }
@@ -320,28 +321,76 @@ export async function getFilterOptions(type: CategoryType): Promise<FilterOption
     new Set(pool.map((p) => p.brand).filter((b): b is string => !!b))
   ).sort((a, b) => a.localeCompare(b, 'uk'));
   const subcatMap = new Map<string, number>();
+  const sizeMap = new Map<string, number>();
   for (const p of pool) {
     const s = p.specs?.subcategory as string | undefined;
-    if (s) subcatMap.set(s, (subcatMap.get(s) ?? 0) + 1);
+    if (s) {
+      // групуємо: якщо підкатегорія входить у групу — рахуємо в групу, інакше саму підкатегорію
+      const group = SUBCAT_TO_GROUP[s] ?? s;
+      subcatMap.set(group, (subcatMap.get(group) ?? 0) + 1);
+      // розмір колеса як окремий фільтр
+      const size = sizeFromSubcat(s);
+      if (size) sizeMap.set(size, (sizeMap.get(size) ?? 0) + 1);
+    }
   }
   const subcategories = Array.from(subcatMap.keys()).sort((a, b) => a.localeCompare(b, 'uk'));
   const subcatCounts = Array.from(subcatMap.entries())
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count);
+  const sizeCounts = Array.from(sizeMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => parseFloat(a.name) - parseFloat(b.name));
   const prices = pool.map((p) => p.price ?? 0).filter((n) => n > 0);
   return {
     brands,
     subcategories,
     subcatCounts,
+    sizeCounts,
     priceMin: prices.length ? Math.floor(Math.min(...prices)) : 0,
     priceMax: prices.length ? Math.ceil(Math.max(...prices)) : 0,
   };
 }
 
 // Повний список товарів категорії (для клієнтської фільтрації)
+// Групування підкатегорій у великі осмислені групи.
+// Ключ — назва групи, значення — підкатегорії з фіда, що в неї входять.
+export const SUBCAT_GROUPS: Record<string, string[]> = {
+  'Електроскутери': ['Електроскутери'],
+  'Електровелосипеди': ['Електровелосипеди'],
+  'Електросамокати': ['Електросамокати'],
+  'Електротрицикли': ['Електротрицикли'],
+  'Дитячий електротранспорт': ['Дитячий електротранспорт'],
+  'Велосипеди': ['Велосипеди 20', 'Велосипеди 24', 'Велосипеди 26', 'Велосипеди 27.5', 'Велосипеди 29'],
+  'Міські велосипеди': ['Міські велосипеди'],
+  'Дитячі велосипеди': ['Дитячі велосипеди 12', 'Дитячі велосипеди 14', 'Дитячі велосипеди 16', 'Дитячі велосипеди 18', 'Дитячі велосипеди 20', 'Велобіги', '3-ох колісні'],
+};
+
+// Зворотний мапінг: підкатегорія -> група
+export const SUBCAT_TO_GROUP: Record<string, string> = (() => {
+  const m: Record<string, string> = {};
+  for (const [group, subs] of Object.entries(SUBCAT_GROUPS)) {
+    for (const s of subs) m[s] = group;
+  }
+  return m;
+})();
+
+// Витягуємо розмір колеса з назви підкатегорії (для окремого фільтра)
+export function sizeFromSubcat(sub: string): string | null {
+  const m = sub.match(/(\d+(?:\.\d+)?)$/);
+  return m ? m[1] + '″' : null;
+}
+
+// Усі підкатегорії, що містять розмір (велосипеди різних діаметрів)
+export const ALL_SUBCATS_WITH_SIZE = [
+  'Велосипеди 20', 'Велосипеди 24', 'Велосипеди 26', 'Велосипеди 27.5', 'Велосипеди 29',
+  'Дитячі велосипеди 12', 'Дитячі велосипеди 14', 'Дитячі велосипеди 16', 'Дитячі велосипеди 18', 'Дитячі велосипеди 20',
+];
+
 export interface CatalogFilters {
   brand?: string;
   subcategory?: string;
+  group?: string;
+  size?: string;
   maxPrice?: number;
   inStockOnly?: boolean;
   sort?: 'featured' | 'price-asc' | 'price-desc';
@@ -378,7 +427,17 @@ export async function getCatalogPage(
       .eq('category_type', type);
 
     if (f.brand) q = q.eq('brand', f.brand);
-    if (f.subcategory) q = q.eq('specs->>subcategory', f.subcategory);
+    if (f.group && SUBCAT_GROUPS[f.group]) {
+      q = q.in('specs->>subcategory', SUBCAT_GROUPS[f.group]);
+    } else if (f.subcategory) {
+      q = q.eq('specs->>subcategory', f.subcategory);
+    }
+    if (f.size) {
+      // розмір "26″" -> усі підкатегорії, що закінчуються на "26"
+      const num = f.size.replace('″', '');
+      const subs = ALL_SUBCATS_WITH_SIZE.filter((s) => sizeFromSubcat(s) === f.size);
+      if (subs.length) q = q.in('specs->>subcategory', subs);
+    }
     if (f.inStockOnly) q = q.eq('in_stock', true);
     if (f.maxPrice) q = q.lte('price', f.maxPrice);
 

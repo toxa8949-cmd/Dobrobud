@@ -22,6 +22,7 @@ export default function CatalogFilters({ options }: { options: FilterOptions }) 
 
   const brand = sp.get('brand') ?? '';
   const sub = sp.get('sub') ?? '';
+  const size = sp.get('size') ?? '';
   const maxPrice = Number(sp.get('maxPrice')) || options.priceMax;
   const inStockOnly = sp.get('inStock') === '1';
 
@@ -60,6 +61,23 @@ export default function CatalogFilters({ options }: { options: FilterOptions }) 
           ))}
         </select>
       </div>
+
+      {options.sizeCounts && options.sizeCounts.length > 0 && (
+        <div className="filter-group">
+          <label>Розмір колеса</label>
+          <div className="filter-sizes">
+            {options.sizeCounts.map((s) => (
+              <button
+                key={s.name}
+                className={`size-chip ${size === s.name ? 'active' : ''}`}
+                onClick={() => update('size', size === s.name ? '' : s.name)}
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {options.priceMax > 0 && (
         <div className="filter-group">

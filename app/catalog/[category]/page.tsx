@@ -52,7 +52,8 @@ export default async function CatalogPage({
   const page = Math.max(1, Number(q.page) || 1);
   const filters: CatalogFilters = {
     brand: q.brand,
-    subcategory: q.sub,
+    group: q.sub,
+    size: q.size,
     maxPrice: Number(q.maxPrice) || undefined,
     inStockOnly: q.inStock === '1',
     sort: (q.sort as CatalogFilters['sort']) || 'featured',
