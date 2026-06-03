@@ -737,3 +737,38 @@ a { color: inherit; text-decoration: none; }
   .ci-head h1 { font-size: 24px; }
   .ci-section-head { padding: 16px 18px; }
 }
+
+/* ── Переваги / довіра ── */
+.trust { margin: 24px 0; }
+.trust-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+  background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 18px 20px;
+}
+.trust-item { display: flex; align-items: center; gap: 12px; }
+.trust-item .trust-ico { font-size: 26px; flex-shrink: 0; }
+.trust-item strong { display: block; font-size: 13.5px; font-weight: 600; }
+.trust-item span { font-size: 12px; color: var(--muted); }
+
+.trust-exp {
+  display: flex; align-items: center; justify-content: center; gap: 28px;
+  margin-top: 14px; padding: 18px 20px;
+  background: linear-gradient(120deg, var(--green-soft), #f3f9ec);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  flex-wrap: wrap;
+}
+.te-item { text-align: center; }
+.te-item strong { display: block; font-size: 22px; font-weight: 800; color: var(--green-dark); line-height: 1.1; }
+.te-item span { font-size: 13px; color: var(--green-dark); opacity: .8; }
+.te-sep { width: 1px; height: 36px; background: var(--green-bright); opacity: .3; }
+
+@media (max-width: 760px) {
+  .trust-row { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .trust-exp { gap: 18px; }
+  .te-item strong { font-size: 19px; }
+}
+@media (max-width: 480px) {
+  .trust-row { grid-template-columns: 1fr; }
+  .te-sep { display: none; }
+  .trust-exp { flex-direction: column; gap: 14px; }
+}
