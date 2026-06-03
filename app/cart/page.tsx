@@ -8,13 +8,29 @@ const fmt = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
 export default function CartPage() {
   const { items, total, setQty, remove, clear } = useCart();
   const [done, setDone] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState('');
   const [form, setForm] = useState({ name: '', phone: '', city: '', note: '' });
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Поки що — локальне підтвердження. Пізніше: запис у таблицю orders.
-    setDone(true);
-    clear();
+    setError('');
+    setSending(true);
+    try {
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, items }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Помилка відправки');
+      setDone(true);
+      clear();
+    } catch (err: any) {
+      setError(err.message || 'Щось пішло не так. Спробуйте ще раз.');
+    } finally {
+      setSending(false);
+    }
   };
 
   if (done) {
@@ -85,7 +101,10 @@ export default function CartPage() {
             placeholder="Коментар до замовлення (необов'язково)"
             value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })}
           />
-          <button type="submit" className="buy-btn">Оформити замовлення</button>
+          {error && <p className="form-error">{error}</p>}
+          <button type="submit" className="buy-btn" disabled={sending}>
+            {sending ? 'Відправляємо…' : 'Оформити замовлення'}
+          </button>
         </form>
       </div>
     </>
