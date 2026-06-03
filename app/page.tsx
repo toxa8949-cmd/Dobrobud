@@ -54,6 +54,9 @@ export default async function HomePage() {
               <strong>Електроінструмент</strong>
               <span className="ps-sub">Щойно завезли →</span>
             </a>
+            <a className="hh-allcats" href="/catalog">
+              Усі категорії <span>→</span>
+            </a>
           </div>
         </div>
       </section>
