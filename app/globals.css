@@ -47,13 +47,13 @@ a { color: inherit; text-decoration: none; }
   background: var(--green-bright); color: #fff;
   display: grid; place-items: center; font-size: 18px;
 }
-.search { flex: 0 1 420px; }
+.search { flex: 0 0 240px; }
 .search input {
   width: 100%; padding: 9px 16px; border: 1px solid var(--line);
   border-radius: var(--radius-sm); background: var(--bg); font-size: 14px;
 }
 .search input:focus { outline: 2px solid var(--green-bright); border-color: transparent; }
-.header-nav { display: flex; gap: 18px; font-size: 14px; color: var(--muted); align-items: center; margin-left: auto; }
+.header-nav { display: flex; gap: 22px; font-size: 14px; color: var(--muted); align-items: center; margin: 0 auto; }
 .header-nav a:hover { color: var(--green); }
 
 /* Каталог-випадайка (мега-меню) */
@@ -514,7 +514,7 @@ a { color: inherit; text-decoration: none; }
   .header-nav { display: none; }
   .burger { display: block; }
   .mobile-menu { display: flex; }
-  .search { max-width: none; }
+  .search { flex: 1 1 auto; max-width: none; }
 }
 @media (max-width: 520px) {
   .bento, .grid { grid-template-columns: 1fr; }

@@ -42,9 +42,6 @@ export default function Header() {
         <span className="logo-mark">⚡</span>
         <span>Добробуд</span>
       </a>
-      <form action="/search" className="search">
-        <input name="q" placeholder="Самокати, велосипеди, хімія, інструмент…" />
-      </form>
 
       <nav className="header-nav">
         <div
@@ -70,6 +67,10 @@ export default function Header() {
         <a href="/about">Про нас</a>
         <a href="/tiktok" className="nav-tiktok">TikTok 🔥</a>
       </nav>
+
+      <form action="/search" className="search">
+        <input name="q" placeholder="Пошук товарів…" />
+      </form>
 
       <a href="/cart" className="cart-link" aria-label="Кошик">
         <span className="cart-ico">🛒</span>
