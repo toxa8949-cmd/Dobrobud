@@ -79,6 +79,82 @@ export async function getFeaturedProducts(): Promise<Product[]> {
   }
 }
 
+export interface HomeSections {
+  chemistry: Product[];
+  etransport: Product[];
+  tools: Product[];
+  deals: Product[];
+  topImages: Record<string, string | undefined>; // фото для плиток категорій
+  counts: Record<string, number>;
+}
+
+// Підбірки для головної: по 8 товарів на категорію + знижки + лічильники
+export async function getHomeSections(): Promise<HomeSections> {
+  const empty: HomeSections = {
+    chemistry: [], etransport: [], tools: [], deals: [],
+    topImages: {}, counts: {},
+  };
+  if (!supabase) {
+    return {
+      chemistry: DEMO_PRODUCTS.filter((p) => p.category_type === 'chemistry'),
+      etransport: DEMO_PRODUCTS.filter((p) => p.category_type === 'etransport'),
+      tools: DEMO_PRODUCTS.filter((p) => p.category_type === 'tools'),
+      deals: DEMO_PRODUCTS.filter((p) => p.old_price),
+      topImages: {}, counts: {},
+    };
+  }
+  try {
+    const pick = async (type: CategoryType) => {
+      const { data } = await supabase!
+        .from('products')
+        .select('*')
+        .eq('category_type', type)
+        .eq('in_stock', true)
+        .limit(8);
+      return (data as Product[]) ?? [];
+    };
+    const count = async (type: CategoryType) => {
+      const { count } = await supabase!
+        .from('products')
+        .select('id', { count: 'exact', head: true })
+        .eq('category_type', type);
+      return count ?? 0;
+    };
+
+    const [chemistry, etransport, tools, dealsRes, cCh, cEt, cTo] = await Promise.all([
+      pick('chemistry'),
+      pick('etransport'),
+      pick('tools'),
+      supabase
+        .from('products')
+        .select('*')
+        .not('old_price', 'is', null)
+        .eq('in_stock', true)
+        .limit(8),
+      count('chemistry'),
+      count('etransport'),
+      count('tools'),
+    ]);
+
+    const topImages: Record<string, string | undefined> = {
+      chemistry: chemistry[0]?.images?.[0],
+      etransport: etransport[0]?.images?.[0],
+      tools: tools[0]?.images?.[0],
+    };
+
+    return {
+      chemistry,
+      etransport,
+      tools,
+      deals: (dealsRes.data as Product[]) ?? [],
+      topImages,
+      counts: { chemistry: cCh, etransport: cEt, tools: cTo },
+    };
+  } catch {
+    return empty;
+  }
+}
+
 export async function getProductsByType(
   type: CategoryType,
   page = 1,

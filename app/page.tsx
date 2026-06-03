@@ -1,61 +1,90 @@
-import { getFeaturedProducts } from '@/lib/supabase';
-import CatalogGrid from '@/components/CatalogGrid';
+import { getHomeSections } from '@/lib/supabase';
+import ProductRow from '@/components/ProductRow';
 
-// ISR: сторінка кешується, перегенерується раз на годину
 export const revalidate = 3600;
 
+const fmtCount = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
+
 export default async function HomePage() {
-  const featured = await getFeaturedProducts();
+  const h = await getHomeSections();
+
+  const catCard = (
+    type: string,
+    href: string,
+    emoji: string,
+    name: string,
+    sub: string
+  ) => (
+    <a className="hcat" href={href}>
+      <div className="hcat-media">
+        {h.topImages[type] ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={h.topImages[type]} alt={name} loading="lazy" />
+        ) : (
+          <span className="hcat-emoji">{emoji}</span>
+        )}
+      </div>
+      <div className="hcat-body">
+        <span className="hcat-name">{name}</span>
+        <span className="hcat-sub">{sub}</span>
+        {h.counts[type] ? <span className="hcat-count">{fmtCount(h.counts[type])} товарів</span> : null}
+      </div>
+    </a>
+  );
 
   return (
     <>
-      <section className="bento">
-        <div className="bento-hero">
-          <span className="glyph">⚡</span>
-          <div>
-            <span className="tag">№1 напрямок · електротранспорт</span>
-            <h1>Електросамокати, велосипеди та техніка</h1>
-            <p>Перевір запас ходу, потужність і батарею. Порівняння моделей в один клік.</p>
+      {/* Hero */}
+      <section className="hero">
+        <div className="hero-text">
+          <span className="hero-badge">Магазин Добробуд</span>
+          <h1>Все для авто, дому та руху — в одному місці</h1>
+          <p>Автохімія, оливи, електротранспорт та інструмент. Оригінальні товари з доставкою по всій Україні.</p>
+          <div className="hero-actions">
+            <a className="hbtn-primary" href="/catalog/chemistry">Перейти до каталогу</a>
+            <a className="hbtn-ghost" href="/catalog/etransport">Електротранспорт</a>
           </div>
-          <div className="actions">
-            <a className="btn-light" href="/catalog/etransport">Обрати модель →</a>
-            <a className="btn-ghost" href="/catalog/etransport">Порівняти</a>
+          <div className="hero-stats">
+            <div><strong>{fmtCount((h.counts.chemistry ?? 0) + (h.counts.etransport ?? 0) + (h.counts.tools ?? 0))}+</strong><span>товарів</span></div>
+            <div><strong>1–3 дні</strong><span>доставка</span></div>
+            <div><strong>14 днів</strong><span>повернення</span></div>
           </div>
         </div>
-
-        <a className="bento-cat" href="/catalog/chemistry">
-          <span className="ico">🧴</span>
-          <span className="name">Автохімія та хімія</span>
-          <span className="sub">Догляд за авто і не тільки</span>
-        </a>
-        <a className="bento-cat" href="/catalog/tools">
-          <span className="ico">🔧</span>
-          <span className="name">Електроінструмент</span>
-          <span className="sub">Дрилі, шуруповерти, болгарки</span>
-        </a>
-
-        <a className="bento-promo" href="/catalog/etransport">
-          <div>
-            <span className="tag">Акція тижня</span>
-            <div className="ttl">Електросамокати −15%</div>
-          </div>
-          <span className="pct">−15%</span>
-        </a>
-        <div className="bento-info">
-          <span className="ico">🚚</span>
-          <span className="name">Доставка по Україні</span>
-        </div>
-        <div className="bento-info">
-          <span className="ico">🛡️</span>
-          <span className="name">Гарантія та сервіс</span>
+        <div className="hero-visual">
+          <span className="hero-glyph">🛒</span>
         </div>
       </section>
 
-      <div className="section-head">
-        <h2>Популярні товари</h2>
-        <a href="/catalog/etransport">Усі товари →</a>
-      </div>
-      <CatalogGrid products={featured} />
+      {/* Category tiles */}
+      <section className="hcats">
+        {catCard('chemistry', '/catalog/chemistry', '🧴', 'Автохімія та хімія', 'Оливи, поліролі, очисники')}
+        {catCard('etransport', '/catalog/etransport', '⚡', 'Електротранспорт', 'Самокати, велосипеди')}
+        {catCard('tools', '/catalog/tools', '🔧', 'Електроінструмент', 'Дрилі, шуруповерти')}
+      </section>
+
+      {/* Promo strip */}
+      <a className="promo-strip" href="/catalog/chemistry?sort=price-asc">
+        <div className="promo-left">
+          <span className="promo-tag">Вигідно</span>
+          <h3>Знижки на автохімію щотижня</h3>
+          <p>Оливи, присадки та засоби догляду за найкращими цінами</p>
+        </div>
+        <span className="promo-cta">Дивитися →</span>
+      </a>
+
+      {/* Product rows */}
+      {h.deals.length > 0 && <ProductRow title="🔥 Товари зі знижкою" href="/catalog/chemistry?sort=price-asc" products={h.deals} />}
+      <ProductRow title="Автохімія та хімія" href="/catalog/chemistry" products={h.chemistry} />
+      <ProductRow title="Електротранспорт" href="/catalog/etransport" products={h.etransport} />
+      <ProductRow title="Електроінструмент" href="/catalog/tools" products={h.tools} />
+
+      {/* Trust */}
+      <section className="trust">
+        <div className="trust-item"><span>🚚</span><div><strong>Доставка по Україні</strong><span>Нова Пошта, Укрпошта</span></div></div>
+        <div className="trust-item"><span>💳</span><div><strong>Зручна оплата</strong><span>Картка або накладений платіж</span></div></div>
+        <div className="trust-item"><span>🛡️</span><div><strong>Гарантія</strong><span>Офіційний товар</span></div></div>
+        <div className="trust-item"><span>↩️</span><div><strong>Повернення</strong><span>14 днів на обмін</span></div></div>
+      </section>
     </>
   );
 }
