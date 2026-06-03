@@ -153,31 +153,27 @@ a { color: inherit; text-decoration: none; }
 .badge-top { left: 8px; background: var(--green-bright); }
 .badge-sale { right: 8px; background: #e0492f; }
 
-/* Кнопка обраного — завжди видима, у кутку */
+/* Кнопка обраного — у кутку фото */
 .fav-btn {
   position: absolute; top: 8px; right: 8px; z-index: 3;
-  width: 32px; height: 32px; border-radius: 50%; border: none;
-  background: rgba(255,255,255,.9); color: var(--muted); cursor: pointer;
+  width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line);
+  background: rgba(255,255,255,.95); color: var(--muted); cursor: pointer;
   font-size: 17px; line-height: 1; display: grid; place-items: center;
-  opacity: 0; transition: opacity .18s, color .15s, transform .15s;
+  transition: color .15s, transform .15s, border-color .15s;
 }
-.card:hover .fav-btn { opacity: 1; }
-.fav-btn:hover { transform: scale(1.15); }
-.fav-btn.on { opacity: 1; color: #e0492f; }
-/* якщо є бейдж-знижки справа — обране трохи нижче */
-.card-img .badge-sale ~ .fav-btn { top: 38px; }
+.fav-btn:hover { transform: scale(1.1); border-color: #e0492f; color: #e0492f; }
+.fav-btn.on { color: #e0492f; border-color: #e0492f; }
+.card-img .badge-sale ~ .fav-btn { top: 42px; }
 
-/* Швидке "у кошик" — виїжджає знизу картинки на ховер */
+/* Кнопка "У кошик" — у тілі картки, під ціною, завжди видима */
 .quick-buy {
-  position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 3;
-  border: none; border-radius: var(--radius-sm); padding: 9px;
-  background: var(--green-bright); color: #fff; font-size: 13px; font-weight: 600;
-  cursor: pointer; opacity: 0; transform: translateY(8px);
-  transition: opacity .18s, transform .18s, background .15s;
+  border: 1px solid var(--green-bright); border-radius: var(--radius-sm);
+  padding: 9px; margin-top: 4px;
+  background: #fff; color: var(--green); font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: background .15s, color .15s;
 }
-.card:hover .quick-buy { opacity: 1; transform: translateY(0); }
-.quick-buy:hover { background: var(--green); }
-.quick-buy.added { background: var(--green-dark); }
+.quick-buy:hover { background: var(--green-bright); color: #fff; }
+.quick-buy.added { background: var(--green-bright); color: #fff; border-color: var(--green-bright); }
 
 .card-body { display: flex; flex-direction: column; gap: 6px; padding: 2px 4px 6px; }
 .brand { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; }

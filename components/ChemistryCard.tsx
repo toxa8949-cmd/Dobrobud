@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Product } from '@/lib/supabase';
-import CardActions from './CardActions';
+import { FavButton } from './CardActions';
+import QuickBuy from './QuickBuy';
 
 const fmt = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
 
@@ -11,7 +12,7 @@ export default function ChemistryCard({ p }: { p: Product }) {
       <div className="card-img">
         {discount > 0 && <span className="badge badge-sale">−{discount}%</span>}
         {p.is_featured && <span className="badge badge-top">ТОП</span>}
-        <CardActions id={p.id} slug={p.slug} title={p.title} price={p.price ?? 0} inStock={p.in_stock} />
+        <FavButton />
         {p.images[0] ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={p.images[0]} alt={p.title} loading="lazy" />
@@ -29,7 +30,11 @@ export default function ChemistryCard({ p }: { p: Product }) {
           {p.old_price && <span className="old">{fmt(p.old_price)} ₴</span>}
           <span className="now">{p.price ? fmt(p.price) : '—'} ₴</span>
         </div>
-        {!p.in_stock && <span className="oos">Немає в наявності</span>}
+        {p.in_stock ? (
+          <QuickBuy id={p.id} slug={p.slug} title={p.title} price={p.price ?? 0} />
+        ) : (
+          <span className="oos">Немає в наявності</span>
+        )}
       </div>
     </Link>
   );
