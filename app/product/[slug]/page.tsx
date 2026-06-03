@@ -12,6 +12,9 @@ const SPEC_LABELS: Record<string, string> = {
   range_km: 'Запас ходу',
   power_w: 'Потужність',
   battery: 'Акумулятор',
+  battery_type: 'Тип акумулятора',
+  model: 'Модель',
+  wheel: 'Колеса',
   volume_ml: "Об'єм",
   type: 'Тип',
   for: 'Призначення',
@@ -55,8 +58,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   // Характеристики: впорядковано, з людськими назвами, артикул/категорія в кінці
   const order = ['speed_kmh', 'range_km', 'power_w', 'battery', 'voltage', 'battery_count', 'volume_ml', 'type', 'for', 'subcategory', 'article'];
+  const HIDDEN_SPECS = ['source_url'];
   const specEntries = Object.entries(p.specs)
-    .filter(([, v]) => v != null && v !== '' && v !== 0)
+    .filter(([k, v]) => v != null && v !== '' && v !== 0 && !HIDDEN_SPECS.includes(k))
     .sort(([a], [b]) => {
       const ia = order.indexOf(a); const ib = order.indexOf(b);
       return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
@@ -98,9 +102,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <BuyBox id={p.id} slug={p.slug} title={p.title} price={p.price ?? 0} inStock={p.in_stock} />
 
           <div className="perks">
-            <div className="perk"><span className="perk-ico">🚚</span><div><strong>Доставка по Україні</strong><span>Нова Пошта, Укрпошта — 1–3 дні</span></div></div>
+            <div className="perk"><span className="perk-ico">🚚</span><div><strong>Доставка по Україні</strong><span>Нова Пошта, Укрпошта</span></div></div>
             <div className="perk"><span className="perk-ico">💳</span><div><strong>Зручна оплата</strong><span>Картка, накладений платіж, безготівка</span></div></div>
-            <div className="perk"><span className="perk-ico">🛡️</span><div><strong>Гарантія якості</strong><span>Офіційний товар, повернення 14 днів</span></div></div>
+            <div className="perk"><span className="perk-ico">🛡️</span><div><strong>Гарантія якості</strong><span>Офіційний товар</span></div></div>
           </div>
         </div>
       </div>
