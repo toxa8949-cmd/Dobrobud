@@ -4,9 +4,12 @@ import { createClient } from '@supabase/supabase-js';
 export const runtime = 'nodejs';
 
 function checkAuth(req: NextRequest): boolean {
+  const login = process.env.ADMIN_LOGIN;
   const pass = process.env.ADMIN_PASSWORD;
-  if (!pass) return true;
-  return req.headers.get('x-admin-password') === pass;
+  if (!login && !pass) return true; // якщо нічого не задано — відкрито (локалка)
+  const okLogin = !login || req.headers.get('x-admin-login') === login;
+  const okPass = !pass || req.headers.get('x-admin-password') === pass;
+  return okLogin && okPass;
 }
 
 function db() {
@@ -26,19 +29,21 @@ export async function GET(req: NextRequest) {
   const type = sp.get('type') || '';
   const q = sp.get('q') || '';
   const onlyEmpty = sp.get('onlyEmpty') === '1';
+  const onlyTiktok = sp.get('onlyTiktok') === '1';
   const page = Math.max(1, parseInt(sp.get('page') || '1', 10));
   const perPage = 50;
   const from = (page - 1) * perPage;
 
   let query = client
     .from('products')
-    .select('id, slug, title, description, category_type, brand, price, specs', { count: 'exact' })
+    .select('id, slug, title, description, category_type, brand, price, specs, is_tiktok', { count: 'exact' })
     .order('id', { ascending: true })
     .range(from, from + perPage - 1);
 
   if (type) query = query.eq('category_type', type);
   if (q) query = query.ilike('title', `%${q}%`);
   if (onlyEmpty) query = query.or('description.is.null,description.eq.');
+  if (onlyTiktok) query = query.eq('is_tiktok', true);
 
   const { data, error, count } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -52,7 +57,7 @@ export async function PATCH(req: NextRequest) {
   const client = db();
   if (!client) return NextResponse.json({ error: 'База не налаштована' }, { status: 500 });
 
-  let body: { id?: number; description?: string };
+  let body: { id?: number; description?: string; is_tiktok?: boolean };
   try {
     body = await req.json();
   } catch {
@@ -60,9 +65,17 @@ export async function PATCH(req: NextRequest) {
   }
   if (!body.id) return NextResponse.json({ error: 'Потрібен id' }, { status: 400 });
 
+  // оновлюємо тільки передані поля
+  const patch: Record<string, any> = {};
+  if (body.description !== undefined) patch.description = body.description ?? null;
+  if (body.is_tiktok !== undefined) patch.is_tiktok = body.is_tiktok;
+  if (Object.keys(patch).length === 0) {
+    return NextResponse.json({ error: 'Нема що оновлювати' }, { status: 400 });
+  }
+
   const { error } = await client
     .from('products')
-    .update({ description: body.description ?? null })
+    .update(patch)
     .eq('id', body.id);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
