@@ -80,7 +80,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="product-gallery">
           {p.images[0] ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={p.images[0]} alt={p.title} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+            <img src={p.images[0]} alt={p.title} />
           ) : (
             <span className="ph">{PLACEHOLDER[p.category_type]}</span>
           )}
@@ -114,7 +114,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           {p.description && (
             <section className="detail-block">
               <h2>Опис</h2>
-              <p>{p.description}</p>
+              {/^\s*</.test(p.description) ? (
+                <div className="desc-rich" dangerouslySetInnerHTML={{ __html: p.description }} />
+              ) : (
+                <p style={{ whiteSpace: 'pre-line' }}>{p.description}</p>
+              )}
             </section>
           )}
           {specEntries.length > 0 && (

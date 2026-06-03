@@ -228,7 +228,8 @@ a { color: inherit; text-decoration: none; }
 .breadcrumbs a:hover { color: var(--green); }
 .breadcrumbs .current { color: var(--ink); }
 .product { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; padding: 4px 0; }
-.product-gallery { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); height: 420px; display: grid; place-items: center; padding: 20px; }
+.product-gallery { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); height: 420px; display: flex; align-items: center; justify-content: center; padding: 24px; overflow: hidden; }
+.product-gallery img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
 .product-gallery .ph { font-size: 90px; opacity: .3; }
 .product h1 { font-size: 26px; font-weight: 600; margin-bottom: 8px; line-height: 1.25; }
 .product .price-now { font-size: 30px; font-weight: 700; }
@@ -476,3 +477,13 @@ a { color: inherit; text-decoration: none; }
 .admin-pager button:disabled { opacity: .4; cursor: default; }
 
 .admin-err { color: #c2410c; font-size: 14px; background: #fff4ed; padding: 10px 14px; border-radius: var(--radius-sm); margin-bottom: 12px; }
+
+/* ── Rich product description ── */
+.desc-rich { font-size: 15px; line-height: 1.7; color: var(--ink); }
+.desc-rich p { margin: 0 0 14px; }
+.desc-rich strong { font-weight: 600; color: var(--ink); }
+.desc-rich h3 { font-size: 16px; font-weight: 700; margin: 20px 0 12px; color: var(--green-dark); }
+.desc-rich ul { list-style: none; padding: 0; margin: 0 0 16px; display: flex; flex-direction: column; gap: 10px; }
+.desc-rich li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; line-height: 1.5; }
+.desc-rich li .li-ico { flex-shrink: 0; font-size: 18px; line-height: 1.4; }
+.desc-rich .desc-lead { font-size: 16px; color: var(--ink); background: var(--green-soft); border-left: 3px solid var(--green-bright); padding: 14px 16px; border-radius: 0 var(--radius-sm) var(--radius-sm) 0; margin-bottom: 18px; }
