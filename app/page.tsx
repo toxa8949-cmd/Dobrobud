@@ -34,23 +34,53 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* TikTok вітрина — головний блок зверху */}
-      {h.tiktok.length > 0 && (
-        <div className="tiktok-frame">
-          <section className="tiktok-row">
-            <div className="tiktok-row-head">
-              <span className="tiktok-badge">🔥 TikTok</span>
-              <h2>Бачили у нашому TikTok?</h2>
-              <a className="tiktok-row-all" href="/tiktok">Усі товари →</a>
-            </div>
-            <div className="prow-scroll">
-              {h.tiktok.map((p) => (
-                <div className="prow-item" key={p.id}>
-                  <TikTokCard p={p} />
+      {/* TikTok вітрина + промо збоку */}
+      {h.tiktok.length > 0 ? (
+        <div className="home-top-grid">
+          <div className="tiktok-frame">
+            <section className="tiktok-row">
+              <div className="tiktok-row-head">
+                <span className="tiktok-badge">🔥 TikTok</span>
+                <div className="tiktok-row-titles">
+                  <h2>Бачили у нашому TikTok?</h2>
+                  <span>Товари з наших відео</span>
                 </div>
-              ))}
-            </div>
-          </section>
+                <a className="tiktok-row-all" href="/tiktok">Усі →</a>
+              </div>
+              <div className="prow-scroll">
+                {h.tiktok.map((p) => (
+                  <div className="prow-item" key={p.id}>
+                    <TikTokCard p={p} />
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+          <div className="home-promos-side">
+            <a className="promo-side promo-amber" href="/catalog/chemistry?sort=price-asc">
+              <span className="ps-tag">🏷️ Акція</span>
+              <strong>Автохімія −15%</strong>
+              <span className="ps-sub">До кінця тижня →</span>
+            </a>
+            <a className="promo-side promo-green" href="/catalog/tools">
+              <span className="ps-tag">✨ Новинки</span>
+              <strong>Електроінструмент</strong>
+              <span className="ps-sub">Щойно завезли →</span>
+            </a>
+          </div>
+        </div>
+      ) : (
+        <div className="home-promos-row">
+          <a className="promo-side promo-amber" href="/catalog/chemistry?sort=price-asc">
+            <span className="ps-tag">🏷️ Акція</span>
+            <strong>Автохімія −15%</strong>
+            <span className="ps-sub">До кінця тижня →</span>
+          </a>
+          <a className="promo-side promo-green" href="/catalog/tools">
+            <span className="ps-tag">✨ Новинки</span>
+            <strong>Електроінструмент</strong>
+            <span className="ps-sub">Щойно завезли →</span>
+          </a>
         </div>
       )}
 
