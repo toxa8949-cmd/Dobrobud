@@ -3,6 +3,30 @@
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 
 const ICONS: Record<string, string> = {
+  // Електротранспорт
+  'Електроскутери': '🛵',
+  'Електросамокати': '🛴',
+  'Електровелосипеди': '🚲',
+  'Електротрицикли': '🛺',
+  'Дитячий електротранспорт': '🧒',
+  'Міські велосипеди': '🚲',
+  'Велобіги': '🚲',
+  '3-ох колісні': '🚲',
+  'Велосипеди 12': '🚲',
+  'Велосипеди 14': '🚲',
+  'Велосипеди 16': '🚲',
+  'Велосипеди 18': '🚲',
+  'Велосипеди 20': '🚲',
+  'Велосипеди 24': '🚲',
+  'Велосипеди 26': '🚲',
+  'Велосипеди 27.5': '🚲',
+  'Велосипеди 29': '🚲',
+  'Дитячі велосипеди 12': '🚲',
+  'Дитячі велосипеди 14': '🚲',
+  'Дитячі велосипеди 16': '🚲',
+  'Дитячі велосипеди 18': '🚲',
+  'Дитячі велосипеди 20': '🚲',
+  // Автохімія
   'Моторні оливи': '🛢️',
   'Трансмісійні оливи': '⚙️',
   'Спеціалізовані оливи': '🛢️',
@@ -33,8 +57,10 @@ const ICONS: Record<string, string> = {
 
 export default function SubcatTiles({
   items,
+  type,
 }: {
   items: { name: string; count: number }[];
+  type?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -51,6 +77,8 @@ export default function SubcatTiles({
 
   if (items.length === 0) return null;
 
+  const fallbackIcon = type === 'etransport' ? '🛞' : type === 'tools' ? '🔧' : '🧴';
+
   return (
     <div className="subcat-tiles">
       {items.map((it) => (
@@ -59,7 +87,7 @@ export default function SubcatTiles({
           className={`subcat-tile ${active === it.name ? 'active' : ''}`}
           onClick={() => pick(it.name)}
         >
-          <span className="subcat-ico">{ICONS[it.name] ?? '🔧'}</span>
+          <span className="subcat-ico">{ICONS[it.name] ?? fallbackIcon}</span>
           <span className="subcat-name">{it.name}</span>
           <span className="subcat-count">{it.count}</span>
         </button>

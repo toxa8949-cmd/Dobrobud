@@ -11,10 +11,28 @@ import SubcatTiles from '@/components/SubcatTiles';
 
 export const revalidate = 3600;
 
-const META: Record<CategoryType, { title: string }> = {
-  etransport: { title: 'Електротранспорт' },
-  chemistry: { title: 'Автохімія та хімія' },
-  tools: { title: 'Електроінструмент' },
+const META: Record<CategoryType, { title: string; tag: string; heading: string; sub: string; glyph: string }> = {
+  etransport: {
+    title: 'Електротранспорт',
+    tag: 'Рух без палива',
+    heading: 'Електроскутери, велосипеди та самокати',
+    sub: 'Великий вибір електротранспорту й велотоварів з доставкою по Україні',
+    glyph: '⚡',
+  },
+  chemistry: {
+    title: 'Автохімія та хімія',
+    tag: 'Вигідні ціни',
+    heading: 'Все для авто в одному місці',
+    sub: 'Оригінальна автохімія, оливи та матеріали з доставкою по Україні',
+    glyph: '🛒',
+  },
+  tools: {
+    title: 'Електроінструмент',
+    tag: 'Для роботи та дому',
+    heading: 'Надійний інструмент для будь-яких задач',
+    sub: 'Дрилі, шуруповерти, болгарки та оснащення з доставкою по Україні',
+    glyph: '🔧',
+  },
 };
 
 const PER_PAGE = 24;
@@ -78,14 +96,14 @@ export default async function CatalogPage({
 
       <div className="catalog-banner">
         <div>
-          <span className="cb-tag">Вигідні ціни</span>
-          <h3>Все для авто в одному місці</h3>
-          <p>Оригінальна автохімія, оливи та матеріали з доставкою по Україні</p>
+          <span className="cb-tag">{META[type].tag}</span>
+          <h3>{META[type].heading}</h3>
+          <p>{META[type].sub}</p>
         </div>
-        <span className="cb-glyph">🛒</span>
+        <span className="cb-glyph">{META[type].glyph}</span>
       </div>
 
-      <SubcatTiles items={options.subcatCounts} />
+      <SubcatTiles items={options.subcatCounts} type={type} />
 
       <div className="catalog-layout">
         <CatalogFiltersComponent options={options} />
