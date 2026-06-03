@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getProductBySlug } from '@/lib/supabase';
+import AddToCartButton from '@/components/AddToCartButton';
 
 export const revalidate = 3600;
 
@@ -61,9 +62,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           {p.in_stock ? '✓ В наявності' : 'Немає в наявності'}
         </div>
 
-        <button className="buy-btn" disabled={!p.in_stock}>
-          Додати в кошик
-        </button>
+        <AddToCartButton
+          id={p.id}
+          slug={p.slug}
+          title={p.title}
+          price={p.price ?? 0}
+          disabled={!p.in_stock}
+        />
 
         {specEntries.length > 0 && (
           <table className="spec-table">
