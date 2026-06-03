@@ -112,30 +112,86 @@ a { color: inherit; text-decoration: none; }
 .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
 .card {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-  padding: 10px; display: flex; flex-direction: column; gap: 8px;
-  transition: transform .15s, box-shadow .15s;
+  padding: 10px; display: flex; flex-direction: column; gap: 8px; min-width: 0;
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
 }
-.card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.06); }
+.card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(60,90,20,.12); border-color: var(--green-bright); }
 .card-img {
-  background: var(--bg); border-radius: var(--radius-sm); height: 150px;
+  background: #fff; border-radius: var(--radius-sm); height: 180px;
   display: grid; place-items: center; position: relative; overflow: hidden;
 }
-.card-img img { width: 100%; height: 100%; object-fit: contain; }
-.card-img .ph { font-size: 44px; opacity: .35; }
-.badge { position: absolute; top: 8px; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: var(--radius-sm); color: #fff; }
+.card-img img { width: 100%; height: 100%; object-fit: contain; transition: transform .25s ease; }
+.card:hover .card-img img { transform: scale(1.06); }
+.card-img .ph { font-size: 48px; opacity: .3; }
+.badge { position: absolute; top: 8px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; color: #fff; z-index: 2; }
 .badge-top { left: 8px; background: var(--green-bright); }
-.badge-sale { right: 8px; background: var(--amber); }
+.badge-sale { right: 8px; background: #e0492f; }
+
+/* Кнопка обраного — завжди видима, у кутку */
+.fav-btn {
+  position: absolute; top: 8px; right: 8px; z-index: 3;
+  width: 32px; height: 32px; border-radius: 50%; border: none;
+  background: rgba(255,255,255,.9); color: var(--muted); cursor: pointer;
+  font-size: 17px; line-height: 1; display: grid; place-items: center;
+  opacity: 0; transition: opacity .18s, color .15s, transform .15s;
+}
+.card:hover .fav-btn { opacity: 1; }
+.fav-btn:hover { transform: scale(1.15); }
+.fav-btn.on { opacity: 1; color: #e0492f; }
+/* якщо є бейдж-знижки справа — обране трохи нижче */
+.card-img .badge-sale ~ .fav-btn { top: 38px; }
+
+/* Швидке "у кошик" — виїжджає знизу картинки на ховер */
+.quick-buy {
+  position: absolute; left: 8px; right: 8px; bottom: 8px; z-index: 3;
+  border: none; border-radius: var(--radius-sm); padding: 9px;
+  background: var(--green-bright); color: #fff; font-size: 13px; font-weight: 600;
+  cursor: pointer; opacity: 0; transform: translateY(8px);
+  transition: opacity .18s, transform .18s, background .15s;
+}
+.card:hover .quick-buy { opacity: 1; transform: translateY(0); }
+.quick-buy:hover { background: var(--green); }
+.quick-buy.added { background: var(--green-dark); }
+
 .card-body { display: flex; flex-direction: column; gap: 6px; padding: 2px 4px 6px; }
 .brand { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .3px; }
-.card-title { font-size: 14px; font-weight: 500; line-height: 1.35; min-height: 38px; }
+.card-title { font-size: 14px; font-weight: 500; line-height: 1.35; min-height: 38px; overflow-wrap: anywhere;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .specs { display: flex; flex-wrap: wrap; gap: 6px; }
 .specs span { font-size: 11px; color: var(--green-dark); background: var(--green-soft); padding: 2px 7px; border-radius: 5px; }
 .card-price { display: flex; align-items: baseline; gap: 8px; margin-top: 4px; }
-.card-price .now { font-size: 17px; font-weight: 700; }
+.card-price .now { font-size: 18px; font-weight: 700; }
 .card-price .old { font-size: 12px; color: var(--muted); text-decoration: line-through; }
 .oos { font-size: 11px; color: #a32d2d; }
 
 .empty { color: var(--muted); padding: 40px 0; text-align: center; }
+
+/* ── Catalog banner ── */
+.catalog-banner {
+  display: flex; align-items: center; justify-content: space-between;
+  background: linear-gradient(100deg, var(--green) 0%, var(--green-bright) 100%);
+  border-radius: var(--radius); padding: 22px 28px; margin-bottom: 18px;
+  color: #fff; overflow: hidden; position: relative;
+}
+.catalog-banner .cb-tag { font-size: 12px; font-weight: 600; color: var(--green-soft); }
+.catalog-banner h3 { font-size: 22px; font-weight: 700; margin: 4px 0 4px; }
+.catalog-banner p { font-size: 14px; color: var(--green-soft); margin: 0; }
+.catalog-banner .cb-glyph { font-size: 80px; opacity: .25; }
+
+/* ── Subcategory tiles ── */
+.subcat-tiles { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+.subcat-tile {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--card); border: 1px solid var(--line); border-radius: 30px;
+  padding: 7px 14px 7px 10px; cursor: pointer; font-size: 13px; color: var(--ink);
+  transition: border-color .15s, background .15s, transform .12s;
+}
+.subcat-tile:hover { border-color: var(--green-bright); transform: translateY(-2px); }
+.subcat-tile.active { background: var(--green-bright); color: #fff; border-color: var(--green-bright); }
+.subcat-ico { font-size: 16px; }
+.subcat-name { font-weight: 500; }
+.subcat-count { font-size: 11px; color: var(--muted); background: var(--bg); padding: 1px 7px; border-radius: 10px; }
+.subcat-tile.active .subcat-count { background: rgba(255,255,255,.25); color: #fff; }
 
 /* ── Skeleton ── */
 .skeleton { pointer-events: none; }

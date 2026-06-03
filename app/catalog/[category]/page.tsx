@@ -7,6 +7,7 @@ import {
 } from '@/lib/supabase';
 import CatalogGrid from '@/components/CatalogGrid';
 import CatalogFiltersComponent from '@/components/CatalogClient';
+import SubcatTiles from '@/components/SubcatTiles';
 
 export const revalidate = 3600;
 
@@ -74,6 +75,17 @@ export default async function CatalogPage({
         <h2>{META[type].title}</h2>
         <span style={{ color: 'var(--muted)', fontSize: 14 }}>{total} товарів</span>
       </div>
+
+      <div className="catalog-banner">
+        <div>
+          <span className="cb-tag">Вигідні ціни</span>
+          <h3>Все для авто в одному місці</h3>
+          <p>Оригінальна автохімія, оливи та матеріали з доставкою по Україні</p>
+        </div>
+        <span className="cb-glyph">🛒</span>
+      </div>
+
+      <SubcatTiles items={options.subcatCounts} />
 
       <div className="catalog-layout">
         <CatalogFiltersComponent options={options} />

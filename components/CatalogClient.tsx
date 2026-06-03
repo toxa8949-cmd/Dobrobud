@@ -21,7 +21,6 @@ export default function CatalogFilters({ options }: { options: FilterOptions }) 
   );
 
   const brand = sp.get('brand') ?? '';
-  const subcategory = sp.get('sub') ?? '';
   const maxPrice = Number(sp.get('maxPrice')) || options.priceMax;
   const inStockOnly = sp.get('inStock') === '1';
   const sort = sp.get('sort') ?? 'featured';
@@ -30,18 +29,6 @@ export default function CatalogFilters({ options }: { options: FilterOptions }) 
 
   return (
     <aside className="filters">
-      {options.subcategories.length > 0 && (
-        <div className="filter-group">
-          <label>Категорія</label>
-          <select value={subcategory} onChange={(e) => update('sub', e.target.value)}>
-            <option value="">Усі категорії</option>
-            {options.subcategories.map((s) => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        </div>
-      )}
-
       <div className="filter-group">
         <label>Бренд</label>
         <select value={brand} onChange={(e) => update('brand', e.target.value)}>

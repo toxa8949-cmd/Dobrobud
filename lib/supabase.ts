@@ -182,6 +182,7 @@ export async function searchProducts(query: string): Promise<Product[]> {
 export interface FilterOptions {
   brands: string[];
   subcategories: string[];
+  subcatCounts: { name: string; count: number }[];
   priceMin: number;
   priceMax: number;
 }
@@ -206,17 +207,20 @@ export async function getFilterOptions(type: CategoryType): Promise<FilterOption
   const brands = Array.from(
     new Set(pool.map((p) => p.brand).filter((b): b is string => !!b))
   ).sort((a, b) => a.localeCompare(b, 'uk'));
-  const subcategories = Array.from(
-    new Set(
-      pool
-        .map((p) => (p.specs?.subcategory as string | undefined))
-        .filter((s): s is string => !!s)
-    )
-  ).sort((a, b) => a.localeCompare(b, 'uk'));
+  const subcatMap = new Map<string, number>();
+  for (const p of pool) {
+    const s = p.specs?.subcategory as string | undefined;
+    if (s) subcatMap.set(s, (subcatMap.get(s) ?? 0) + 1);
+  }
+  const subcategories = Array.from(subcatMap.keys()).sort((a, b) => a.localeCompare(b, 'uk'));
+  const subcatCounts = Array.from(subcatMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
   const prices = pool.map((p) => p.price ?? 0).filter((n) => n > 0);
   return {
     brands,
     subcategories,
+    subcatCounts,
     priceMin: prices.length ? Math.floor(Math.min(...prices)) : 0,
     priceMax: prices.length ? Math.ceil(Math.max(...prices)) : 0,
   };
