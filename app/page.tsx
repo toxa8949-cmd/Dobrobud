@@ -59,11 +59,56 @@ export default async function HomePage() {
         {cat('chemistry', '/catalog/chemistry?sub=Моторні оливи', '🛢️', 'Оливи', '#f3e8ff')}
       </section>
 
+      {/* Популярні категорії з фото */}
+      {h.topSubcats.length > 0 && (
+        <section className="topcats">
+          <div className="section-head">
+            <h2>Популярні категорії</h2>
+          </div>
+          <div className="topcats-grid">
+            {h.topSubcats.map((s) => (
+              <a
+                key={s.name}
+                className="topcat"
+                href={`/catalog/chemistry?sub=${encodeURIComponent(s.name)}`}
+              >
+                <div className="topcat-img">
+                  {s.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={s.image} alt={s.name} loading="lazy" />
+                  ) : (
+                    <span>🧴</span>
+                  )}
+                </div>
+                <div className="topcat-name">{s.name}</div>
+                <div className="topcat-count">{fmtCount(s.count)}</div>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
       {/* Рядки товарів */}
       {h.deals.length > 0 && <ProductRow title="🔥 Хіти продажів" href="/catalog/chemistry?sort=price-asc" products={h.deals} />}
       <ProductRow title="Автохімія та хімія" href="/catalog/chemistry" products={h.chemistry} />
       <ProductRow title="Електротранспорт" href="/catalog/etransport" products={h.etransport} />
       <ProductRow title="Електроінструмент" href="/catalog/tools" products={h.tools} />
+
+      {/* Бренди */}
+      {h.topBrands.length > 0 && (
+        <section className="brands">
+          <div className="section-head">
+            <h2>Бренди</h2>
+          </div>
+          <div className="brands-grid">
+            {h.topBrands.map((b) => (
+              <a key={b} className="brand-chip" href={`/catalog/chemistry?brand=${encodeURIComponent(b)}`}>
+                {b}
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
     </>
   );
 }

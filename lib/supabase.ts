@@ -84,15 +84,17 @@ export interface HomeSections {
   etransport: Product[];
   tools: Product[];
   deals: Product[];
-  topImages: Record<string, string | undefined>; // фото для плиток категорій
+  topImages: Record<string, string | undefined>;
   counts: Record<string, number>;
+  topSubcats: { name: string; count: number; image?: string }[];
+  topBrands: string[];
 }
 
 // Підбірки для головної: по 8 товарів на категорію + знижки + лічильники
 export async function getHomeSections(): Promise<HomeSections> {
   const empty: HomeSections = {
     chemistry: [], etransport: [], tools: [], deals: [],
-    topImages: {}, counts: {},
+    topImages: {}, counts: {}, topSubcats: [], topBrands: [],
   };
   if (!supabase) {
     return {
@@ -100,7 +102,7 @@ export async function getHomeSections(): Promise<HomeSections> {
       etransport: DEMO_PRODUCTS.filter((p) => p.category_type === 'etransport'),
       tools: DEMO_PRODUCTS.filter((p) => p.category_type === 'tools'),
       deals: DEMO_PRODUCTS.filter((p) => p.old_price),
-      topImages: {}, counts: {},
+      topImages: {}, counts: {}, topSubcats: [], topBrands: [],
     };
   }
   try {
@@ -142,6 +144,38 @@ export async function getHomeSections(): Promise<HomeSections> {
       tools: tools[0]?.images?.[0],
     };
 
+    // Топ-підкатегорії з фото: тягнемо легку вибірку й рахуємо
+    let topSubcats: { name: string; count: number; image?: string }[] = [];
+    let topBrands: string[] = [];
+    try {
+      const { data: pool } = await supabase
+        .from('products')
+        .select('brand, specs, images')
+        .eq('category_type', 'chemistry')
+        .limit(5000);
+      if (pool) {
+        const map = new Map<string, { count: number; image?: string }>();
+        const brandSet = new Set<string>();
+        for (const row of pool as any[]) {
+          const sub = row.specs?.subcategory as string | undefined;
+          if (sub) {
+            const cur = map.get(sub) ?? { count: 0, image: undefined };
+            cur.count++;
+            if (!cur.image && row.images?.[0]) cur.image = row.images[0];
+            map.set(sub, cur);
+          }
+          if (row.brand) brandSet.add(row.brand);
+        }
+        topSubcats = Array.from(map.entries())
+          .map(([name, v]) => ({ name, count: v.count, image: v.image }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 8);
+        topBrands = Array.from(brandSet).sort((a, b) => a.localeCompare(b, 'uk')).slice(0, 12);
+      }
+    } catch {
+      /* топ-блоки опційні */
+    }
+
     return {
       chemistry,
       etransport,
@@ -149,6 +183,8 @@ export async function getHomeSections(): Promise<HomeSections> {
       deals: (dealsRes.data as Product[]) ?? [],
       topImages,
       counts: { chemistry: cCh, etransport: cEt, tools: cTo },
+      topSubcats,
+      topBrands,
     };
   } catch {
     return empty;
