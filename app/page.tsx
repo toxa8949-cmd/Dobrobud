@@ -37,20 +37,22 @@ export default async function HomePage() {
     <>
       {/* TikTok вітрина — найперше, що бачить відвідувач */}
       {h.tiktok.length > 0 && (
-        <section className="tiktok-row">
-          <div className="tiktok-row-head">
-            <span className="tiktok-badge">🔥 TikTok</span>
-            <h2>Бачили у нашому TikTok?</h2>
-            <a className="tiktok-row-all" href="/tiktok">Усі товари →</a>
-          </div>
-          <div className="prow-scroll">
-            {h.tiktok.map((p) => (
-              <div className="prow-item" key={p.id}>
-                <TikTokCard p={p} />
-              </div>
-            ))}
-          </div>
-        </section>
+        <div className="tiktok-frame">
+          <section className="tiktok-row">
+            <div className="tiktok-row-head">
+              <span className="tiktok-badge">🔥 TikTok</span>
+              <h2>Бачили у нашому TikTok?</h2>
+              <a className="tiktok-row-all" href="/tiktok">Усі товари →</a>
+            </div>
+            <div className="prow-scroll">
+              {h.tiktok.map((p) => (
+                <div className="prow-item" key={p.id}>
+                  <TikTokCard p={p} />
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
       )}
 
       {/* Hero + промо */}
