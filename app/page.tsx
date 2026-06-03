@@ -1,7 +1,6 @@
 import { getHomeSections } from '@/lib/supabase';
 import ProductRow from '@/components/ProductRow';
 import TikTokCard from '@/components/TikTokCard';
-import HeroSlider from '@/components/HeroSlider';
 
 export const revalidate = 60;
 
@@ -35,24 +34,7 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Hero + промо */}
-      <section className="home-top">
-        <HeroSlider />
-        <div className="home-promos">
-          <a className="promo-card promo-amber" href="/catalog/chemistry?sort=price-asc">
-            <span className="pc-tag">Акція</span>
-            <strong>Автохімія −15%</strong>
-            <span className="pc-sub">До кінця тижня</span>
-          </a>
-          <a className="promo-card promo-green" href="/catalog/tools">
-            <span className="pc-tag">Новинки</span>
-            <strong>Інструмент</strong>
-            <span className="pc-sub">Щойно завезли</span>
-          </a>
-        </div>
-      </section>
-
-      {/* TikTok вітрина — одразу під героєм */}
+      {/* TikTok вітрина — головний блок зверху */}
       {h.tiktok.length > 0 && (
         <div className="tiktok-frame">
           <section className="tiktok-row">
