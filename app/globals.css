@@ -160,7 +160,7 @@ a { color: inherit; text-decoration: none; }
 .buy-btn:hover { background: var(--green); }
 
 /* ── Catalog with filters ── */
-.catalog-layout { display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: start; }
+.catalog-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 24px; align-items: start; }
 .filters {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
   padding: 18px; display: flex; flex-direction: column; gap: 18px; position: sticky; top: 80px;
@@ -185,7 +185,19 @@ a { color: inherit; text-decoration: none; }
   padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm);
   font-size: 14px; background: var(--card);
 }
-.catalog-main .grid { grid-template-columns: repeat(3, 1fr); }
+.catalog-main { min-width: 0; }
+.catalog-main .grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.card { min-width: 0; }
+.card-title { overflow-wrap: anywhere; }
+.pagination { display: flex; gap: 6px; justify-content: center; margin-top: 28px; flex-wrap: wrap; align-items: center; }
+.pagination a {
+  min-width: 38px; height: 38px; padding: 0 10px; border: 1px solid var(--line); border-radius: var(--radius-sm);
+  background: var(--card); display: inline-flex; align-items: center; justify-content: center;
+  font-size: 14px; color: var(--ink);
+}
+.pagination a:hover { border-color: var(--green-bright); color: var(--green); }
+.pagination a.active { background: var(--green-bright); color: #fff; border-color: var(--green-bright); font-weight: 600; }
+.pagination .dots { color: var(--muted); padding: 0 4px; }
 
 @media (max-width: 900px) {
   .catalog-layout { grid-template-columns: 1fr; }

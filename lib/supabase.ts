@@ -1,11 +1,33 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// Нормалізація: прибираємо пробіли, переноси рядків, лапки, слеш у кінці
+function clean(v: string | undefined): string {
+  return (v ?? '')
+    .replace(/[\r\n\t]/g, '')
+    .trim()
+    .replace(/^["']|["']$/g, '')
+    .replace(/\/+$/, '');
+}
+
+const url = clean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+const anon = clean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
 
 // Клієнт для читання (публічний). Запис — окремий service_role клієнт у cron.
-export const supabase =
-  url && anon ? createClient(url, anon, { auth: { persistSession: false } }) : null;
+// Ініціалізація повністю захищена: будь-яке криве значення → null,
+// сайт працює на демо-даних замість падіння білда.
+function initClient(): SupabaseClient | null {
+  try {
+    if (!url || !anon) return null;
+    // Строга перевірка: значення має бути валідним http(s) URL
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
+    return createClient(url, anon, { auth: { persistSession: false } });
+  } catch {
+    return null;
+  }
+}
+
+export const supabase = initClient();
 
 export type CategoryType = 'etransport' | 'chemistry' | 'tools';
 
@@ -41,14 +63,20 @@ export const DEMO_PRODUCTS: Product[] = [
 ];
 
 export async function getFeaturedProducts(): Promise<Product[]> {
-  if (!supabase) return DEMO_PRODUCTS.filter((p) => p.is_featured);
-  const { data } = await supabase
-    .from('products')
-    .select('*')
-    .eq('is_featured', true)
-    .eq('in_stock', true)
-    .limit(8);
-  return data?.length ? (data as Product[]) : DEMO_PRODUCTS.filter((p) => p.is_featured);
+  const demo = DEMO_PRODUCTS.filter((p) => p.is_featured);
+  if (!supabase) return demo;
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .eq('is_featured', true)
+      .eq('in_stock', true)
+      .limit(8);
+    if (error) return demo;
+    return data?.length ? (data as Product[]) : demo;
+  } catch {
+    return demo;
+  }
 }
 
 export async function getProductsByType(
@@ -56,79 +84,154 @@ export async function getProductsByType(
   page = 1,
   perPage = 24
 ): Promise<{ products: Product[]; total: number }> {
-  if (!supabase) {
-    const all = DEMO_PRODUCTS.filter((p) => p.category_type === type);
+  const all = DEMO_PRODUCTS.filter((p) => p.category_type === type);
+  if (!supabase) return { products: all, total: all.length };
+  try {
+    const from = (page - 1) * perPage;
+    const { data, count, error } = await supabase
+      .from('products')
+      .select('*', { count: 'exact' })
+      .eq('category_type', type)
+      .range(from, from + perPage - 1)
+      .order('is_featured', { ascending: false });
+    if (error) return { products: all, total: all.length };
+    return { products: (data as Product[]) ?? [], total: count ?? 0 };
+  } catch {
     return { products: all, total: all.length };
   }
-  const from = (page - 1) * perPage;
-  const { data, count } = await supabase
-    .from('products')
-    .select('*', { count: 'exact' })
-    .eq('category_type', type)
-    .range(from, from + perPage - 1)
-    .order('is_featured', { ascending: false });
-  return { products: (data as Product[]) ?? [], total: count ?? 0 };
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  if (!supabase) return DEMO_PRODUCTS.find((p) => p.slug === slug) ?? null;
-  const { data } = await supabase.from('products').select('*').eq('slug', slug).single();
-  return (data as Product) ?? null;
+  const demo = DEMO_PRODUCTS.find((p) => p.slug === slug) ?? null;
+  if (!supabase) return demo;
+  try {
+    const { data, error } = await supabase.from('products').select('*').eq('slug', slug).single();
+    if (error) return demo;
+    return (data as Product) ?? demo;
+  } catch {
+    return demo;
+  }
 }
 
 // ── Пошук по всьому каталогу ──
 export async function searchProducts(query: string): Promise<Product[]> {
   const q = query.trim().toLowerCase();
   if (!q) return [];
-  if (!supabase) {
-    return DEMO_PRODUCTS.filter((p) =>
-      `${p.title} ${p.brand ?? ''}`.toLowerCase().includes(q)
-    );
+  const demo = DEMO_PRODUCTS.filter((p) =>
+    `${p.title} ${p.brand ?? ''}`.toLowerCase().includes(q)
+  );
+  if (!supabase) return demo;
+  try {
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .ilike('search_text', `%${q}%`)
+      .limit(60);
+    if (error) return demo;
+    return (data as Product[]) ?? [];
+  } catch {
+    return demo;
   }
-  const { data } = await supabase
-    .from('products')
-    .select('*')
-    .ilike('search_text', `%${q}%`)
-    .limit(60);
-  return (data as Product[]) ?? [];
 }
 
 export interface FilterOptions {
   brands: string[];
+  subcategories: string[];
   priceMin: number;
   priceMax: number;
 }
 
-// Зібрати доступні бренди та діапазон цін для категорії (для UI фільтрів)
+// Зібрати бренди, підкатегорії та діапазон цін (для UI фільтрів).
+// Дані тягнемо легким запитом (тільки потрібні поля) — швидко навіть на 2500+ товарах.
 export async function getFilterOptions(type: CategoryType): Promise<FilterOptions> {
-  let pool: Product[];
-  if (!supabase) {
-    pool = DEMO_PRODUCTS.filter((p) => p.category_type === type);
-  } else {
-    const { data } = await supabase
-      .from('products')
-      .select('brand, price')
-      .eq('category_type', type);
-    pool = (data as Product[]) ?? [];
+  let pool: { brand?: string | null; price?: number | null; specs?: any }[] =
+    DEMO_PRODUCTS.filter((p) => p.category_type === type);
+  if (supabase) {
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('brand, price, specs')
+        .eq('category_type', type)
+        .limit(5000);
+      if (!error && data) pool = data;
+    } catch {
+      /* fallback to demo pool */
+    }
   }
   const brands = Array.from(
     new Set(pool.map((p) => p.brand).filter((b): b is string => !!b))
-  ).sort();
+  ).sort((a, b) => a.localeCompare(b, 'uk'));
+  const subcategories = Array.from(
+    new Set(
+      pool
+        .map((p) => (p.specs?.subcategory as string | undefined))
+        .filter((s): s is string => !!s)
+    )
+  ).sort((a, b) => a.localeCompare(b, 'uk'));
   const prices = pool.map((p) => p.price ?? 0).filter((n) => n > 0);
   return {
     brands,
+    subcategories,
     priceMin: prices.length ? Math.floor(Math.min(...prices)) : 0,
     priceMax: prices.length ? Math.ceil(Math.max(...prices)) : 0,
   };
 }
 
 // Повний список товарів категорії (для клієнтської фільтрації)
-export async function getAllByType(type: CategoryType): Promise<Product[]> {
-  if (!supabase) return DEMO_PRODUCTS.filter((p) => p.category_type === type);
-  const { data } = await supabase
-    .from('products')
-    .select('*')
-    .eq('category_type', type)
-    .order('is_featured', { ascending: false });
-  return (data as Product[]) ?? [];
+export interface CatalogFilters {
+  brand?: string;
+  subcategory?: string;
+  maxPrice?: number;
+  inStockOnly?: boolean;
+  sort?: 'featured' | 'price-asc' | 'price-desc';
+  page?: number;
+  perPage?: number;
+}
+
+export interface CatalogResult {
+  products: Product[];
+  total: number;
+}
+
+// Серверна вибірка з фільтрами й пагінацією.
+// Вантажимо лише одну сторінку — швидко навіть на тисячах товарів.
+export async function getCatalogPage(
+  type: CategoryType,
+  f: CatalogFilters = {}
+): Promise<CatalogResult> {
+  const perPage = f.perPage ?? 24;
+  const page = Math.max(1, f.page ?? 1);
+
+  if (!supabase) {
+    let demo = DEMO_PRODUCTS.filter((p) => p.category_type === type);
+    if (f.brand) demo = demo.filter((p) => p.brand === f.brand);
+    if (f.inStockOnly) demo = demo.filter((p) => p.in_stock);
+    if (f.maxPrice) demo = demo.filter((p) => (p.price ?? 0) <= f.maxPrice!);
+    return { products: demo, total: demo.length };
+  }
+
+  try {
+    let q = supabase
+      .from('products')
+      .select('*', { count: 'exact' })
+      .eq('category_type', type);
+
+    if (f.brand) q = q.eq('brand', f.brand);
+    if (f.subcategory) q = q.eq('specs->>subcategory', f.subcategory);
+    if (f.inStockOnly) q = q.eq('in_stock', true);
+    if (f.maxPrice) q = q.lte('price', f.maxPrice);
+
+    if (f.sort === 'price-asc') q = q.order('price', { ascending: true });
+    else if (f.sort === 'price-desc') q = q.order('price', { ascending: false });
+    else q = q.order('is_featured', { ascending: false }).order('id', { ascending: true });
+
+    const from = (page - 1) * perPage;
+    q = q.range(from, from + perPage - 1);
+
+    const { data, count, error } = await q;
+    if (error) return { products: [], total: 0 };
+    return { products: (data as Product[]) ?? [], total: count ?? 0 };
+  } catch {
+    return { products: [], total: 0 };
+  }
 }
