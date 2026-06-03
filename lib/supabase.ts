@@ -113,6 +113,51 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   }
 }
 
+// Схожі товари: спершу з тієї ж підкатегорії, добираємо з типу
+export async function getRelatedProducts(p: Product, limit = 4): Promise<Product[]> {
+  if (!supabase) {
+    return DEMO_PRODUCTS.filter(
+      (x) => x.category_type === p.category_type && x.id !== p.id
+    ).slice(0, limit);
+  }
+  try {
+    const sub = p.specs?.subcategory as string | undefined;
+    // Перший вибір — та сама підкатегорія
+    if (sub) {
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category_type', p.category_type)
+        .eq('specs->>subcategory', sub)
+        .neq('id', p.id)
+        .eq('in_stock', true)
+        .limit(limit);
+      if (data && data.length >= limit) return data as Product[];
+      // Добираємо з типу, якщо в підкатегорії замало
+      const have = (data as Product[]) ?? [];
+      const ids = [p.id, ...have.map((x) => x.id)];
+      const { data: extra } = await supabase
+        .from('products')
+        .select('*')
+        .eq('category_type', p.category_type)
+        .not('id', 'in', `(${ids.join(',')})`)
+        .eq('in_stock', true)
+        .limit(limit - have.length);
+      return [...have, ...((extra as Product[]) ?? [])];
+    }
+    const { data } = await supabase
+      .from('products')
+      .select('*')
+      .eq('category_type', p.category_type)
+      .neq('id', p.id)
+      .eq('in_stock', true)
+      .limit(limit);
+    return (data as Product[]) ?? [];
+  } catch {
+    return [];
+  }
+}
+
 // ── Пошук по всьому каталогу ──
 export async function searchProducts(query: string): Promise<Product[]> {
   const q = query.trim().toLowerCase();
