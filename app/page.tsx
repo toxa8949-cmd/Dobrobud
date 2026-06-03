@@ -9,24 +9,6 @@ const fmtCount = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
 export default async function HomePage() {
   const h = await getHomeSections();
 
-  const cat = (
-    type: string,
-    href: string,
-    emoji: string,
-    name: string,
-    bg: string
-  ) => (
-    <a className="mcat" href={href}>
-      <div className="mcat-ico" style={{ background: bg }}>
-        <span>{emoji}</span>
-      </div>
-      <div>
-        <div className="mcat-name">{name}</div>
-        <div className="mcat-count">{h.counts[type] ? `${fmtCount(h.counts[type])} товарів` : 'Скоро'}</div>
-      </div>
-    </a>
-  );
-
   return (
     <>
       {/* Об'єднаний верхній блок: TikTok + промо + категорії */}
@@ -73,13 +55,6 @@ export default async function HomePage() {
               <span className="ps-sub">Щойно завезли →</span>
             </a>
           </div>
-        </div>
-
-        <div className="hh-cats">
-          {cat('etransport', '/catalog/etransport', '⚡', 'Транспорт', '#dbeafe')}
-          {cat('chemistry', '/catalog/chemistry', '🧴', 'Автохімія', '#fce7f3')}
-          {cat('tools', '/catalog/tools', '🔧', 'Інструмент', '#fef3c7')}
-          {cat('chemistry', '/catalog/chemistry?sub=Моторні оливи', '🛢️', 'Оливи', '#f3e8ff')}
         </div>
       </section>
 
