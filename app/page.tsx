@@ -18,12 +18,7 @@ export default async function HomePage() {
   ) => (
     <a className="mcat" href={href}>
       <div className="mcat-ico" style={{ background: bg }}>
-        {h.topImages[type] ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={h.topImages[type]} alt={name} loading="lazy" />
-        ) : (
-          <span>{emoji}</span>
-        )}
+        <span>{emoji}</span>
       </div>
       <div>
         <div className="mcat-name">{name}</div>

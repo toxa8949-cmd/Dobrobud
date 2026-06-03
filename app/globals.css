@@ -121,8 +121,7 @@ a { color: inherit; text-decoration: none; }
   padding: 14px; transition: transform .14s, box-shadow .14s, border-color .14s;
 }
 .mcat:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,.06); border-color: var(--blue-bright); }
-.mcat-ico { width: 52px; height: 52px; border-radius: 10px; display: grid; place-items: center; font-size: 24px; flex-shrink: 0; overflow: hidden; }
-.mcat-ico img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+.mcat-ico { width: 54px; height: 54px; border-radius: 12px; display: grid; place-items: center; font-size: 28px; flex-shrink: 0; }
 .mcat-name { font-size: 14px; font-weight: 600; }
 .mcat-count { font-size: 12px; color: var(--muted); }
 
