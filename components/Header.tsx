@@ -3,9 +3,38 @@
 import { useState } from 'react';
 import { useCart } from '@/lib/cart';
 
+// Структура каталогу для випадайки
+const CATALOG = [
+  {
+    title: 'Електротранспорт',
+    type: 'etransport',
+    items: [
+      'Електроскутери', 'Електровелосипеди', 'Електросамокати',
+      'Електротрицикли', 'Велосипеди', 'Дитячі велосипеди',
+    ],
+  },
+  {
+    title: 'Автохімія',
+    type: 'chemistry',
+    items: [
+      'Моторні оливи', 'Автомобільні емалі', 'AdBlue',
+      'Ароматизатори', 'Антикорозійні засоби та покриття',
+    ],
+  },
+  {
+    title: 'Інструмент',
+    type: 'tools',
+    items: [],
+  },
+];
+
 export default function Header() {
   const { count } = useCart();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
+
+  const catUrl = (type: string, sub?: string) =>
+    `/catalog/${type}${sub ? `?sub=${encodeURIComponent(sub)}` : ''}`;
 
   return (
     <header className="site-header">
@@ -16,29 +45,52 @@ export default function Header() {
       <form action="/search" className="search">
         <input name="q" placeholder="Самокати, велосипеди, хімія, інструмент…" />
       </form>
+
       <nav className="header-nav">
-        <a href="/catalog/etransport">Електротранспорт</a>
-        <a href="/catalog/chemistry">Автохімія</a>
-        <a href="/catalog/tools">Інструмент</a>
+        <div
+          className="nav-catalog"
+          onMouseEnter={() => setCatOpen(true)}
+          onMouseLeave={() => setCatOpen(false)}
+        >
+          <button className="nav-catalog-btn">Каталог ▾</button>
+          {catOpen && (
+            <div className="mega">
+              {CATALOG.map((col) => (
+                <div className="mega-col" key={col.type}>
+                  <a className="mega-title" href={`/catalog/${col.type}`}>{col.title}</a>
+                  {col.items.map((it) => (
+                    <a className="mega-link" key={it} href={catUrl(col.type, it)}>{it}</a>
+                  ))}
+                  {col.items.length === 0 && <span className="mega-soon">Скоро</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <a href="/about">Про нас</a>
         <a href="/tiktok" className="nav-tiktok">TikTok 🔥</a>
       </nav>
+
       <a href="/cart" className="cart-link" aria-label="Кошик">
         <span className="cart-ico">🛒</span>
         {count > 0 && <span className="cart-count">{count}</span>}
       </a>
-      <button
-        className="burger"
-        aria-label="Меню"
-        onClick={() => setMenuOpen((v) => !v)}
-      >
+      <button className="burger" aria-label="Меню" onClick={() => setMenuOpen((v) => !v)}>
         {menuOpen ? '✕' : '☰'}
       </button>
 
       {menuOpen && (
         <div className="mobile-menu">
-          <a href="/catalog/etransport" onClick={() => setMenuOpen(false)}>Електротранспорт</a>
-          <a href="/catalog/chemistry" onClick={() => setMenuOpen(false)}>Автохімія</a>
-          <a href="/catalog/tools" onClick={() => setMenuOpen(false)}>Інструмент</a>
+          {CATALOG.map((col) => (
+            <details className="mm-group" key={col.type}>
+              <summary>{col.title}</summary>
+              <a href={`/catalog/${col.type}`} onClick={() => setMenuOpen(false)}>Усі товари</a>
+              {col.items.map((it) => (
+                <a key={it} href={catUrl(col.type, it)} onClick={() => setMenuOpen(false)}>{it}</a>
+              ))}
+            </details>
+          ))}
+          <a href="/about" onClick={() => setMenuOpen(false)}>Про нас</a>
           <a href="/tiktok" className="mm-tiktok" onClick={() => setMenuOpen(false)}>TikTok 🔥</a>
         </div>
       )}
