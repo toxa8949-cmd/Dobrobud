@@ -574,30 +574,35 @@ a { color: inherit; text-decoration: none; }
 .desc-rich .desc-specs li:last-child { border-bottom: none; }
 .desc-rich .desc-specs strong { color: var(--muted); font-weight: 500; margin-right: 6px; }
 
-/* ── TikTok вітрина + промо збоку ── */
-.home-top-grid { display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 14px; margin-bottom: 24px; align-items: stretch; }
+/* ── Об'єднаний верхній блок ── */
+.home-hero {
+  background: #fff; border: 1px solid var(--line); border-radius: 20px;
+  padding: 16px; margin-bottom: 24px;
+}
+.home-hero-top { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 12px; margin-bottom: 12px; align-items: stretch; }
 
-.tiktok-frame {
-  padding: 1.5px;
-  border-radius: 18px;
-  background: linear-gradient(120deg, #ff0050, #9b4dff 50%, #00f2ea);
-  min-width: 0;
+/* TikTok міні-блок усередині */
+.hh-tiktok {
+  background: linear-gradient(120deg, #fff5f8, #f0fdfc);
+  border: 1px solid #ffe0ec; border-radius: 14px; padding: 14px; min-width: 0;
 }
-.tiktok-row {
-  background: #fff;
-  border-radius: 16.5px;
-  padding: 18px 20px;
-  height: 100%;
-  position: relative;
-  overflow: hidden;
+.hh-tiktok.hh-empty { display: flex; align-items: center; }
+.hh-tiktok .tiktok-row-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.hh-tiktok .prow-scroll { max-width: 100%; padding-bottom: 2px; }
+.hh-tiktok .card { background: #fff; }
+
+/* Промо стовпчик усередині */
+.hh-promos { display: flex; flex-direction: column; gap: 12px; }
+.hh-promos .promo-side { flex: 1; justify-content: center; border-radius: 14px; }
+
+/* Категорії-міні-блоки всередині */
+.hh-cats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.hh-cats .mcat {
+  background: var(--bg); border: 1px solid transparent; border-radius: 14px;
 }
-.tiktok-row::before {
-  content: '';
-  position: absolute; top: -40px; right: -30px; width: 160px; height: 160px;
-  background: radial-gradient(circle, rgba(255,0,80,.06), transparent 70%);
-  pointer-events: none;
-}
-.tiktok-row-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; position: relative; }
+.hh-cats .mcat:hover { background: #fff; border-color: var(--line); }
+
+/* ── TikTok вітрина (стара, лишаємо tiktok-badge etc) ── */
 .tiktok-row-titles h2 { font-size: 18px; font-weight: 700; margin: 0; line-height: 1.2; }
 .tiktok-row-titles span { font-size: 12.5px; color: var(--muted); }
 .tiktok-row-all {
@@ -631,15 +636,17 @@ a { color: inherit; text-decoration: none; }
 .promo-green .ps-tag { color: #1f9d3f; }
 
 @media (max-width: 860px) {
-  .home-top-grid { grid-template-columns: 1fr; }
-  .home-promos-side { flex-direction: row; }
-  .home-promos-side .promo-side { flex: 1; }
+  .home-hero-top { grid-template-columns: 1fr; }
+  .hh-promos { flex-direction: row; }
+  .hh-promos .promo-side { flex: 1; }
 }
 @media (max-width: 520px) {
-  .home-top-grid { gap: 12px; }
-  .home-promos-side, .home-promos-row { grid-template-columns: 1fr; flex-direction: column; }
-  .tiktok-row { padding: 14px; }
-  .tiktok-row-head { flex-wrap: wrap; gap: 8px; }
+  .home-hero { padding: 12px; }
+  .home-hero-top { gap: 10px; }
+  .hh-promos { flex-direction: column; }
+  .hh-cats { grid-template-columns: 1fr 1fr; }
+  .hh-tiktok { padding: 12px; }
+  .hh-tiktok .tiktok-row-head { flex-wrap: wrap; gap: 8px; }
   .tiktok-row-titles h2 { font-size: 16px; }
   .tiktok-row-all { margin-left: 0; }
 }

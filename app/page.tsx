@@ -29,11 +29,11 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* TikTok вітрина + промо збоку */}
-      {h.tiktok.length > 0 ? (
-        <div className="home-top-grid">
-          <div className="tiktok-frame">
-            <section className="tiktok-row">
+      {/* Об'єднаний верхній блок: TikTok + промо + категорії */}
+      <section className="home-hero">
+        <div className="home-hero-top">
+          {h.tiktok.length > 0 ? (
+            <div className="hh-tiktok">
               <div className="tiktok-row-head">
                 <span className="tiktok-badge">🔥 TikTok</span>
                 <div className="tiktok-row-titles">
@@ -49,9 +49,19 @@ export default async function HomePage() {
                   </div>
                 ))}
               </div>
-            </section>
-          </div>
-          <div className="home-promos-side">
+            </div>
+          ) : (
+            <div className="hh-tiktok hh-empty">
+              <div className="tiktok-row-head">
+                <span className="tiktok-badge">🔥 TikTok</span>
+                <div className="tiktok-row-titles">
+                  <h2>Стежте за нашим TikTok</h2>
+                  <span>Найкращі товари — у відео</span>
+                </div>
+              </div>
+            </div>
+          )}
+          <div className="hh-promos">
             <a className="promo-side promo-amber" href="/catalog/chemistry?sort=price-asc">
               <span className="ps-tag">🏷️ Акція</span>
               <strong>Автохімія −15%</strong>
@@ -64,27 +74,13 @@ export default async function HomePage() {
             </a>
           </div>
         </div>
-      ) : (
-        <div className="home-promos-row">
-          <a className="promo-side promo-amber" href="/catalog/chemistry?sort=price-asc">
-            <span className="ps-tag">🏷️ Акція</span>
-            <strong>Автохімія −15%</strong>
-            <span className="ps-sub">До кінця тижня →</span>
-          </a>
-          <a className="promo-side promo-green" href="/catalog/tools">
-            <span className="ps-tag">✨ Новинки</span>
-            <strong>Електроінструмент</strong>
-            <span className="ps-sub">Щойно завезли →</span>
-          </a>
-        </div>
-      )}
 
-      {/* Плитки категорій */}
-      <section className="mcats">
-        {cat('etransport', '/catalog/etransport', '⚡', 'Транспорт', '#dbeafe')}
-        {cat('chemistry', '/catalog/chemistry', '🧴', 'Автохімія', '#fce7f3')}
-        {cat('tools', '/catalog/tools', '🔧', 'Інструмент', '#fef3c7')}
-        {cat('chemistry', '/catalog/chemistry?sub=Моторні оливи', '🛢️', 'Оливи', '#f3e8ff')}
+        <div className="hh-cats">
+          {cat('etransport', '/catalog/etransport', '⚡', 'Транспорт', '#dbeafe')}
+          {cat('chemistry', '/catalog/chemistry', '🧴', 'Автохімія', '#fce7f3')}
+          {cat('tools', '/catalog/tools', '🔧', 'Інструмент', '#fef3c7')}
+          {cat('chemistry', '/catalog/chemistry?sub=Моторні оливи', '🛢️', 'Оливи', '#f3e8ff')}
+        </div>
       </section>
 
       {/* Переваги / довіра */}
