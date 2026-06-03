@@ -28,7 +28,7 @@ export default function AboutPage() {
           <div className="about-card">
             <span className="about-ico">🚚</span>
             <strong>Доставка по Україні</strong>
-            <p>Нова Пошта та Укрпошта в будь-який куточок країни.</p>
+            <p>Нова Пошта по всій країні або самовивіз із магазину.</p>
           </div>
           <div className="about-card">
             <span className="about-ico">💳</span>

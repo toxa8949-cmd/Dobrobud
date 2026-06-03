@@ -102,7 +102,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <BuyBox id={p.id} slug={p.slug} title={p.title} price={p.price ?? 0} inStock={p.in_stock} />
 
           <div className="perks">
-            <div className="perk"><span className="perk-ico">🚚</span><div><strong>Доставка по Україні</strong><span>Нова Пошта, Укрпошта</span></div></div>
+            <div className="perk"><span className="perk-ico">🚚</span><div><strong>Доставка по Україні</strong><span>Нова Пошта або самовивіз</span></div></div>
             <div className="perk"><span className="perk-ico">💳</span><div><strong>Зручна оплата</strong><span>Картка, накладений платіж, безготівка</span></div></div>
             <div className="perk"><span className="perk-ico">🛡️</span><div><strong>Гарантія якості</strong><span>Офіційний товар</span></div></div>
           </div>

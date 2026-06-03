@@ -92,6 +92,44 @@ export default async function HomePage() {
         {cat('chemistry', '/catalog/chemistry?sub=Моторні оливи', '🛢️', 'Оливи', '#f3e8ff')}
       </section>
 
+      {/* Переваги / довіра */}
+      <section className="trust">
+        <div className="trust-row">
+          <div className="trust-item">
+            <span className="trust-ico">🚚</span>
+            <div><strong>Доставка по Україні</strong><span>Нова Пошта або самовивіз</span></div>
+          </div>
+          <div className="trust-item">
+            <span className="trust-ico">💳</span>
+            <div><strong>Зручна оплата</strong><span>Картка, накладений платіж</span></div>
+          </div>
+          <div className="trust-item">
+            <span className="trust-ico">🛡️</span>
+            <div><strong>Офіційний товар</strong><span>Гарантія якості</span></div>
+          </div>
+          <div className="trust-item">
+            <span className="trust-ico">📞</span>
+            <div><strong>Підтримка</strong><span>Допоможемо з вибором</span></div>
+          </div>
+        </div>
+        <div className="trust-exp">
+          <div className="te-item">
+            <strong>20+ років</strong>
+            <span>на ринку України</span>
+          </div>
+          <div className="te-sep" />
+          <div className="te-item">
+            <strong>Офлайн-магазин</strong>
+            <span>можна прийти й оглянути товар</span>
+          </div>
+          <div className="te-sep" />
+          <div className="te-item">
+            <strong>Тисячі клієнтів</strong>
+            <span>та перевірена репутація</span>
+          </div>
+        </div>
+      </section>
+
       {/* Популярні категорії з фото */}
       {h.topSubcats.length > 0 && (
         <section className="topcats">
