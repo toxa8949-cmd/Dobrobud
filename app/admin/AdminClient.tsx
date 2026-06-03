@@ -11,6 +11,7 @@ interface AdminProduct {
   brand?: string | null;
   price: number | null;
   specs: Record<string, any>;
+  is_tiktok?: boolean;
 }
 
 const TYPES = [
@@ -30,6 +31,7 @@ export default function AdminClient() {
   const [type, setType] = useState('');
   const [q, setQ] = useState('');
   const [onlyEmpty, setOnlyEmpty] = useState(false);
+  const [onlyTiktok, setOnlyTiktok] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -52,6 +54,7 @@ export default function AdminClient() {
         if (type) params.set('type', type);
         if (q) params.set('q', q);
         if (onlyEmpty) params.set('onlyEmpty', '1');
+        if (onlyTiktok) params.set('onlyTiktok', '1');
         const res = await fetch(`/api/admin/products?${params}`, { headers: headers() });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Помилка завантаження');
@@ -65,7 +68,7 @@ export default function AdminClient() {
         setLoading(false);
       }
     },
-    [type, q, onlyEmpty, headers]
+    [type, q, onlyEmpty, onlyTiktok, headers]
   );
 
   // згенерувати опис для одного товару (і одразу зберегти)
@@ -99,6 +102,31 @@ export default function AdminClient() {
         setGenStatus((s) => ({ ...s, [p.id]: 'err' }));
         setError(`${p.title}: ${e.message}`);
         return false;
+      }
+    },
+    [headers]
+  );
+
+  // перемкнути позначку TikTok
+  const toggleTikTok = useCallback(
+    async (p: AdminProduct) => {
+      const next = !p.is_tiktok;
+      // оптимістично оновлюємо UI
+      setProducts((list) => list.map((x) => (x.id === p.id ? { ...x, is_tiktok: next } : x)));
+      try {
+        const res = await fetch('/api/admin/products', {
+          method: 'PATCH',
+          headers: headers(),
+          body: JSON.stringify({ id: p.id, is_tiktok: next }),
+        });
+        if (!res.ok) {
+          const d = await res.json();
+          throw new Error(d.error);
+        }
+      } catch (e: any) {
+        // відкат при помилці
+        setProducts((list) => list.map((x) => (x.id === p.id ? { ...x, is_tiktok: !next } : x)));
+        setError(`${p.title}: ${e.message}`);
       }
     },
     [headers]
@@ -168,6 +196,10 @@ export default function AdminClient() {
           <input type="checkbox" checked={onlyEmpty} onChange={(e) => setOnlyEmpty(e.target.checked)} />
           Лише без опису
         </label>
+        <label className="admin-check">
+          <input type="checkbox" checked={onlyTiktok} onChange={(e) => setOnlyTiktok(e.target.checked)} />
+          Лише TikTok
+        </label>
         <button onClick={() => load(1)} disabled={loading}>Застосувати</button>
         <button
           className="admin-batch"
@@ -197,16 +229,26 @@ export default function AdminClient() {
                   ) : (
                     <span className="admin-no-desc">без опису</span>
                   )}
+                  {p.is_tiktok && <span className="admin-tiktok-badge">TikTok</span>}
                 </div>
                 {p.description && <div className="admin-row-desc">{p.description}</div>}
               </div>
-              <button
-                className="admin-gen-btn"
-                onClick={() => generateOne(p)}
-                disabled={st === 'gen' || batchRunning}
-              >
-                {st === 'gen' ? '…' : st === 'saved' ? '✓' : p.description ? 'Перегенерувати' : 'Згенерувати'}
-              </button>
+              <div className="admin-row-actions">
+                <button
+                  className={`admin-tiktok-btn ${p.is_tiktok ? 'on' : ''}`}
+                  onClick={() => toggleTikTok(p)}
+                  title={p.is_tiktok ? 'Прибрати з TikTok' : 'Додати в TikTok'}
+                >
+                  {p.is_tiktok ? '✓ У TikTok' : '+ TikTok'}
+                </button>
+                <button
+                  className="admin-gen-btn"
+                  onClick={() => generateOne(p)}
+                  disabled={st === 'gen' || batchRunning}
+                >
+                  {st === 'gen' ? '…' : st === 'saved' ? '✓' : p.description ? 'Перегенерувати' : 'Згенерувати'}
+                </button>
+              </div>
             </div>
           );
         })}

@@ -44,6 +44,7 @@ export interface Product {
   images: string[];
   specs: Record<string, any>;
   is_featured?: boolean;
+  is_tiktok?: boolean;
 }
 
 // ── Тестові дані: працюють поки не підключені реальні фіди ──
@@ -62,6 +63,22 @@ export const DEMO_PRODUCTS: Product[] = [
   { id: 12, slug: 'lobzik-akkum', title: 'Лобзик акумуляторний 20V', category_type: 'tools', brand: 'Makita', price: 3200, in_stock: true, images: [], specs: { power_w: 0, voltage: '20V', battery_count: 1 } },
 ];
 
+
+// Усі товари з позначкою TikTok (для сторінки /tiktok)
+export async function getTikTokProducts(): Promise<Product[]> {
+  if (!supabase) return [];
+  try {
+    const { data } = await supabase
+      .from('products')
+      .select('*')
+      .eq('is_tiktok', true)
+      .order('id', { ascending: false })
+      .limit(200);
+    return (data as Product[]) ?? [];
+  } catch {
+    return [];
+  }
+}
 export async function getFeaturedProducts(): Promise<Product[]> {
   const demo = DEMO_PRODUCTS.filter((p) => p.is_featured);
   if (!supabase) return demo;
@@ -84,6 +101,7 @@ export interface HomeSections {
   etransport: Product[];
   tools: Product[];
   deals: Product[];
+  tiktok: Product[];
   topImages: Record<string, string | undefined>;
   counts: Record<string, number>;
   topSubcats: { name: string; count: number; image?: string }[];
@@ -93,7 +111,7 @@ export interface HomeSections {
 // Підбірки для головної: по 8 товарів на категорію + знижки + лічильники
 export async function getHomeSections(): Promise<HomeSections> {
   const empty: HomeSections = {
-    chemistry: [], etransport: [], tools: [], deals: [],
+    chemistry: [], etransport: [], tools: [], deals: [], tiktok: [],
     topImages: {}, counts: {}, topSubcats: [], topBrands: [],
   };
   if (!supabase) {
@@ -102,6 +120,7 @@ export async function getHomeSections(): Promise<HomeSections> {
       etransport: DEMO_PRODUCTS.filter((p) => p.category_type === 'etransport'),
       tools: DEMO_PRODUCTS.filter((p) => p.category_type === 'tools'),
       deals: DEMO_PRODUCTS.filter((p) => p.old_price),
+      tiktok: [],
       topImages: {}, counts: {}, topSubcats: [], topBrands: [],
     };
   }
@@ -123,7 +142,7 @@ export async function getHomeSections(): Promise<HomeSections> {
       return count ?? 0;
     };
 
-    const [chemistry, etransport, tools, dealsRes, cCh, cEt, cTo] = await Promise.all([
+    const [chemistry, etransport, tools, dealsRes, tiktokRes, cCh, cEt, cTo] = await Promise.all([
       pick('chemistry'),
       pick('etransport'),
       pick('tools'),
@@ -133,6 +152,12 @@ export async function getHomeSections(): Promise<HomeSections> {
         .not('old_price', 'is', null)
         .eq('in_stock', true)
         .limit(8),
+      supabase
+        .from('products')
+        .select('*')
+        .eq('is_tiktok', true)
+        .order('id', { ascending: false })
+        .limit(12),
       count('chemistry'),
       count('etransport'),
       count('tools'),
@@ -181,6 +206,7 @@ export async function getHomeSections(): Promise<HomeSections> {
       etransport,
       tools,
       deals: (dealsRes.data as Product[]) ?? [],
+      tiktok: (tiktokRes.data as Product[]) ?? [],
       topImages,
       counts: { chemistry: cCh, etransport: cEt, tools: cTo },
       topSubcats,

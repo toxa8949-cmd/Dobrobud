@@ -1,5 +1,6 @@
 import { getHomeSections } from '@/lib/supabase';
 import ProductRow from '@/components/ProductRow';
+import TikTokCard from '@/components/TikTokCard';
 import HeroSlider from '@/components/HeroSlider';
 
 export const revalidate = 3600;
@@ -58,6 +59,27 @@ export default async function HomePage() {
         {cat('tools', '/catalog/tools', '🔧', 'Інструмент', '#fef3c7')}
         {cat('chemistry', '/catalog/chemistry?sub=Моторні оливи', '🛢️', 'Оливи', '#f3e8ff')}
       </section>
+
+      {/* TikTok вітрина */}
+      {h.tiktok.length > 0 && (
+        <section className="tiktok-section">
+          <div className="tiktok-head">
+            <div className="tiktok-title">
+              <span className="tiktok-badge">TikTok</span>
+              <h2>Товари з нашого TikTok</h2>
+              <p>Те, що ви бачили у відео — замовляйте прямо тут</p>
+            </div>
+            <a className="tiktok-all" href="/tiktok">Усі товари →</a>
+          </div>
+          <div className="prow-scroll">
+            {h.tiktok.map((p) => (
+              <div className="prow-item" key={p.id}>
+                <TikTokCard p={p} />
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Популярні категорії з фото */}
       {h.topSubcats.length > 0 && (

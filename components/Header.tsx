@@ -18,6 +18,7 @@ export default function Header() {
         <a href="/catalog/etransport">Електротранспорт</a>
         <a href="/catalog/chemistry">Автохімія</a>
         <a href="/catalog/tools">Інструмент</a>
+        <a href="/tiktok" className="nav-tiktok">TikTok 🔥</a>
       </nav>
       <a href="/cart" className="cart-link" aria-label="Кошик">
         <span className="cart-ico">🛒</span>
