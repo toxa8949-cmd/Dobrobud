@@ -75,3 +75,60 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   const { data } = await supabase.from('products').select('*').eq('slug', slug).single();
   return (data as Product) ?? null;
 }
+
+// ── Пошук по всьому каталогу ──
+export async function searchProducts(query: string): Promise<Product[]> {
+  const q = query.trim().toLowerCase();
+  if (!q) return [];
+  if (!supabase) {
+    return DEMO_PRODUCTS.filter((p) =>
+      `${p.title} ${p.brand ?? ''}`.toLowerCase().includes(q)
+    );
+  }
+  const { data } = await supabase
+    .from('products')
+    .select('*')
+    .ilike('search_text', `%${q}%`)
+    .limit(60);
+  return (data as Product[]) ?? [];
+}
+
+export interface FilterOptions {
+  brands: string[];
+  priceMin: number;
+  priceMax: number;
+}
+
+// Зібрати доступні бренди та діапазон цін для категорії (для UI фільтрів)
+export async function getFilterOptions(type: CategoryType): Promise<FilterOptions> {
+  let pool: Product[];
+  if (!supabase) {
+    pool = DEMO_PRODUCTS.filter((p) => p.category_type === type);
+  } else {
+    const { data } = await supabase
+      .from('products')
+      .select('brand, price')
+      .eq('category_type', type);
+    pool = (data as Product[]) ?? [];
+  }
+  const brands = Array.from(
+    new Set(pool.map((p) => p.brand).filter((b): b is string => !!b))
+  ).sort();
+  const prices = pool.map((p) => p.price ?? 0).filter((n) => n > 0);
+  return {
+    brands,
+    priceMin: prices.length ? Math.floor(Math.min(...prices)) : 0,
+    priceMax: prices.length ? Math.ceil(Math.max(...prices)) : 0,
+  };
+}
+
+// Повний список товарів категорії (для клієнтської фільтрації)
+export async function getAllByType(type: CategoryType): Promise<Product[]> {
+  if (!supabase) return DEMO_PRODUCTS.filter((p) => p.category_type === type);
+  const { data } = await supabase
+    .from('products')
+    .select('*')
+    .eq('category_type', type)
+    .order('is_featured', { ascending: false });
+  return (data as Product[]) ?? [];
+}
