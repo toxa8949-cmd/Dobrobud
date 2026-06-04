@@ -6,14 +6,21 @@ import OrdersPanel from './OrdersPanel';
 import ProductsPanel from './ProductsPanel';
 import BlogPanel from './BlogPanel';
 
-type Tab = 'dashboard' | 'orders' | 'products' | 'blog';
+type Tab = 'dashboard' | 'products' | 'orders' | 'blog';
 
 const TABS: { key: Tab; label: string; icon: string }[] = [
-  { key: 'dashboard', label: 'Дашборд', icon: '📊' },
-  { key: 'orders', label: 'Замовлення', icon: '📦' },
-  { key: 'products', label: 'Товари', icon: '🛒' },
-  { key: 'blog', label: 'Блог', icon: '📝' },
+  { key: 'dashboard', label: 'Дашборд', icon: '▦' },
+  { key: 'products', label: 'Товари', icon: '📦' },
+  { key: 'orders', label: 'Замовлення', icon: '🛍️' },
+  { key: 'blog', label: 'Блог', icon: '📄' },
 ];
+
+const TITLES: Record<Tab, string> = {
+  dashboard: 'Дашборд',
+  products: 'Товари',
+  orders: 'Замовлення',
+  blog: 'Блог',
+};
 
 export default function AdminClient() {
   const [login, setLogin] = useState('');
@@ -22,6 +29,7 @@ export default function AdminClient() {
   const [checking, setChecking] = useState(false);
   const [error, setError] = useState('');
   const [tab, setTab] = useState<Tab>('dashboard');
+  const [navOpen, setNavOpen] = useState(false);
 
   const headers = useCallback(
     (): HeadersInit => ({ 'Content-Type': 'application/json', 'x-admin-login': login, 'x-admin-password': pass }),
@@ -56,21 +64,34 @@ export default function AdminClient() {
   }
 
   return (
-    <div className="admin">
-      <div className="admin-tabs">
-        {TABS.map((t) => (
-          <button key={t.key} className={tab === t.key ? 'active' : ''} onClick={() => setTab(t.key)}>
-            <span>{t.icon}</span> {t.label}
-          </button>
-        ))}
-      </div>
+    <div className="adm-shell">
+      <aside className={`adm-sidebar ${navOpen ? 'open' : ''}`}>
+        <div className="adm-brand">
+          <span className="adm-brand-mark">⚡</span>
+          <div><strong>Добробуд</strong><span>Адмінпанель</span></div>
+        </div>
+        <nav className="adm-nav">
+          {TABS.map((t) => (
+            <button key={t.key} className={tab === t.key ? 'active' : ''} onClick={() => { setTab(t.key); setNavOpen(false); }}>
+              <span className="adm-nav-ico">{t.icon}</span> {t.label}
+            </button>
+          ))}
+        </nav>
+        <a href="/" className="adm-back-site">← На сайт</a>
+      </aside>
 
-      <div className="admin-panel">
-        {tab === 'dashboard' && <DashboardPanel headers={headers} />}
-        {tab === 'orders' && <OrdersPanel headers={headers} />}
-        {tab === 'products' && <ProductsPanel headers={headers} />}
-        {tab === 'blog' && <BlogPanel headers={headers} />}
-      </div>
+      <main className="adm-main">
+        <div className="adm-main-head">
+          <button className="adm-burger" onClick={() => setNavOpen((v) => !v)}>☰</button>
+          <h1>{TITLES[tab]}</h1>
+        </div>
+        <div className="adm-content">
+          {tab === 'dashboard' && <DashboardPanel headers={headers} />}
+          {tab === 'products' && <ProductsPanel headers={headers} />}
+          {tab === 'orders' && <OrdersPanel headers={headers} />}
+          {tab === 'blog' && <BlogPanel headers={headers} />}
+        </div>
+      </main>
     </div>
   );
 }

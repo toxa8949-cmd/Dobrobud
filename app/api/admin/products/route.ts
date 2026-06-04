@@ -1,83 +1,123 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { checkAuth, adminDb, unauthorized, noDb } from '@/lib/admin';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-function checkAuth(req: NextRequest): boolean {
-  const login = process.env.ADMIN_LOGIN;
-  const pass = process.env.ADMIN_PASSWORD;
-  if (!login && !pass) return true; // якщо нічого не задано — відкрито (локалка)
-  const okLogin = !login || req.headers.get('x-admin-login') === login;
-  const okPass = !pass || req.headers.get('x-admin-password') === pass;
-  return okLogin && okPass;
-}
+const slugify = (s: string) =>
+  s.toLowerCase().replace(/['’"]/g, '').replace(/[^a-zа-яіїєґ0-9]+/gi, '-')
+    .replace(/^-+|-+$/g, '').slice(0, 90);
 
-function db() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) return null;
-  return createClient(url, key, { auth: { persistSession: false } });
-}
-
-// GET: список товарів з пагінацією/фільтром
+// GET: список товарів з фільтрами/пагінацією
 export async function GET(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: 'Доступ заборонено' }, { status: 401 });
-  const client = db();
-  if (!client) return NextResponse.json({ error: 'База не налаштована' }, { status: 500 });
+  if (!checkAuth(req)) return unauthorized();
+  const client = adminDb();
+  if (!client) return noDb();
 
   const sp = req.nextUrl.searchParams;
   const type = sp.get('type') || '';
   const q = sp.get('q') || '';
-  const onlyEmpty = sp.get('onlyEmpty') === '1';
-  const onlyTiktok = sp.get('onlyTiktok') === '1';
+  const brand = sp.get('brand') || '';
+  const stock = sp.get('stock') || ''; // 'in' | 'out'
+  const sort = sp.get('sort') || 'new'; // new | old | price-asc | price-desc | name
   const page = Math.max(1, parseInt(sp.get('page') || '1', 10));
-  const perPage = 50;
+  const perPage = 30;
   const from = (page - 1) * perPage;
 
   let query = client
     .from('products')
-    .select('id, slug, title, description, category_type, brand, price, specs, is_tiktok', { count: 'exact' })
-    .order('id', { ascending: true })
+    .select('id, slug, title, description, category_type, brand, price, old_price, in_stock, images, specs, is_tiktok, is_featured', { count: 'exact' })
     .range(from, from + perPage - 1);
 
   if (type) query = query.eq('category_type', type);
   if (q) query = query.ilike('title', `%${q}%`);
-  if (onlyEmpty) query = query.or('description.is.null,description.eq.');
-  if (onlyTiktok) query = query.eq('is_tiktok', true);
+  if (brand) query = query.eq('brand', brand);
+  if (stock === 'in') query = query.eq('in_stock', true);
+  if (stock === 'out') query = query.eq('in_stock', false);
+
+  if (sort === 'old') query = query.order('id', { ascending: true });
+  else if (sort === 'price-asc') query = query.order('price', { ascending: true });
+  else if (sort === 'price-desc') query = query.order('price', { ascending: false });
+  else if (sort === 'name') query = query.order('title', { ascending: true });
+  else query = query.order('id', { ascending: false }); // new
 
   const { data, error, count } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
   return NextResponse.json({ products: data, total: count ?? 0, page, perPage });
 }
 
-// PATCH: зберегти опис товару
+// PATCH: оновити будь-які поля товару
 export async function PATCH(req: NextRequest) {
-  if (!checkAuth(req)) return NextResponse.json({ error: 'Доступ заборонено' }, { status: 401 });
-  const client = db();
-  if (!client) return NextResponse.json({ error: 'База не налаштована' }, { status: 500 });
+  if (!checkAuth(req)) return unauthorized();
+  const client = adminDb();
+  if (!client) return noDb();
 
-  let body: { id?: number; description?: string; is_tiktok?: boolean };
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: 'Некоректний запит' }, { status: 400 });
-  }
-  if (!body.id) return NextResponse.json({ error: 'Потрібен id' }, { status: 400 });
+  let b: Record<string, unknown>;
+  try { b = await req.json(); } catch { return NextResponse.json({ error: 'Некоректний запит' }, { status: 400 }); }
+  const id = Number(b.id);
+  if (!id) return NextResponse.json({ error: 'Потрібен id' }, { status: 400 });
 
-  // оновлюємо тільки передані поля
-  const patch: Record<string, any> = {};
-  if (body.description !== undefined) patch.description = body.description ?? null;
-  if (body.is_tiktok !== undefined) patch.is_tiktok = body.is_tiktok;
-  if (Object.keys(patch).length === 0) {
-    return NextResponse.json({ error: 'Нема що оновлювати' }, { status: 400 });
-  }
+  const patch: Record<string, unknown> = {};
+  if (b.title !== undefined) patch.title = String(b.title).trim();
+  if (b.description !== undefined) patch.description = b.description ? String(b.description) : null;
+  if (b.brand !== undefined) patch.brand = b.brand ? String(b.brand).trim() : null;
+  if (b.price !== undefined) patch.price = b.price === null || b.price === '' ? null : Number(b.price);
+  if (b.old_price !== undefined) patch.old_price = b.old_price === null || b.old_price === '' ? null : Number(b.old_price);
+  if (b.in_stock !== undefined) patch.in_stock = !!b.in_stock;
+  if (b.is_tiktok !== undefined) patch.is_tiktok = !!b.is_tiktok;
+  if (b.is_featured !== undefined) patch.is_featured = !!b.is_featured;
+  if (b.images !== undefined) patch.images = Array.isArray(b.images) ? b.images : [];
+  if (b.category_type !== undefined) patch.category_type = String(b.category_type);
 
-  const { error } = await client
-    .from('products')
-    .update(patch)
-    .eq('id', body.id);
+  if (Object.keys(patch).length === 0) return NextResponse.json({ error: 'Нема що оновлювати' }, { status: 400 });
 
+  const { error } = await client.from('products').update(patch).eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ ok: true });
 }
+
+// POST: створити новий товар
+export async function POST(req: NextRequest) {
+  if (!checkAuth(req)) return unauthorized();
+  const client = adminDb();
+  if (!client) return noDb();
+
+  let b: Record<string, unknown>;
+  try { b = await req.json(); } catch { return NextResponse.json({ error: 'Некоректний запит' }, { status: 400 }); }
+  const title = String(b.title ?? '').trim();
+  if (!title) return NextResponse.json({ error: 'Потрібна назва' }, { status: 400 });
+
+  const slug = String(b.slug ?? '').trim() || slugify(title) || `product-${Date.now()}`;
+
+  const { data, error } = await client.from('products').insert({
+    slug,
+    title,
+    description: b.description ? String(b.description) : null,
+    category_type: String(b.category_type ?? 'etransport'),
+    brand: b.brand ? String(b.brand).trim() : null,
+    price: b.price === null || b.price === '' || b.price === undefined ? null : Number(b.price),
+    old_price: b.old_price === null || b.old_price === '' || b.old_price === undefined ? null : Number(b.old_price),
+    in_stock: b.in_stock !== false,
+    images: Array.isArray(b.images) ? b.images : [],
+    specs: typeof b.specs === 'object' && b.specs ? b.specs : {},
+    is_tiktok: !!b.is_tiktok,
+    is_featured: !!b.is_featured,
+  }).select('id').single();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true, id: data.id });
+}
+
+// DELETE: видалити товар
+export async function DELETE(req: NextRequest) {
+  if (!checkAuth(req)) return unauthorized();
+  const client = adminDb();
+  if (!client) return noDb();
+  const id = Number(req.nextUrl.searchParams.get('id'));
+  if (!id) return NextResponse.json({ error: 'Потрібен id' }, { status: 400 });
+  const { error } = await client.from('products').delete().eq('id', id);
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ ok: true });
+}
+
+// GET брендів для фільтра — окремий ендпоінт через ?action=brands

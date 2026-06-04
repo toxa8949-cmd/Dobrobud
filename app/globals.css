@@ -957,3 +957,66 @@ a { color: inherit; text-decoration: none; }
 .adm-btn-primary { background: var(--green-bright); color: #fff; border: none; border-radius: 9px; padding: 11px 22px; font-size: 14px; font-weight: 600; cursor: pointer; }
 .adm-btn-primary:disabled { opacity: .5; cursor: not-allowed; }
 .adm-btn-ghost { background: none; border: 1px solid var(--line); border-radius: 9px; padding: 11px 22px; font-size: 14px; cursor: pointer; color: var(--ink); }
+
+/* ════════ АДМІНКА: оболонка з бічним меню ════════ */
+.adm-shell { display: grid; grid-template-columns: 230px 1fr; gap: 24px; align-items: start; }
+.adm-sidebar { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px 14px; position: sticky; top: 24px; }
+.adm-brand { display: flex; align-items: center; gap: 10px; padding: 6px 8px 18px; }
+.adm-brand-mark { width: 38px; height: 38px; display: grid; place-items: center; background: var(--green-bright); border-radius: 10px; font-size: 20px; }
+.adm-brand strong { display: block; font-size: 15px; }
+.adm-brand span { font-size: 11px; color: var(--muted); }
+.adm-nav { display: flex; flex-direction: column; gap: 3px; }
+.adm-nav button { display: flex; align-items: center; gap: 11px; background: none; border: none; padding: 11px 12px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--ink); cursor: pointer; text-align: left; width: 100%; }
+.adm-nav button:hover { background: var(--bg); }
+.adm-nav button.active { background: var(--green-soft); color: var(--green); }
+.adm-nav-ico { font-size: 15px; width: 18px; text-align: center; }
+.adm-back-site { display: block; margin-top: 18px; padding: 10px 12px; font-size: 13px; color: var(--muted); }
+.adm-main { min-width: 0; }
+.adm-main-head { display: flex; align-items: center; gap: 12px; margin-bottom: 22px; }
+.adm-main-head h1 { font-size: 26px; font-weight: 800; }
+.adm-burger { display: none; background: none; border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font-size: 16px; cursor: pointer; }
+
+/* ── Товари: верхня панель ── */
+.adm-prod-top { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.adm-prod-filters { display: flex; gap: 10px; flex-wrap: wrap; flex: 1; }
+.adm-prod-filters input, .adm-prod-filters select { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; font-size: 13.5px; font-family: inherit; background: var(--card); }
+.adm-search { min-width: 220px; flex: 1; }
+.adm-add-btn { background: #1a1a1a; color: #fff; border: none; border-radius: 12px; padding: 12px 20px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.adm-add-btn:hover { background: #333; }
+.adm-prod-count { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+
+/* ── Товари: таблиця ── */
+.adm-prod-table { display: flex; flex-direction: column; }
+.adm-prod-row { display: grid; grid-template-columns: 1fr 130px 120px 110px 130px 80px; gap: 12px; align-items: center; padding: 14px 12px; border-bottom: 1px solid var(--line); }
+.adm-prod-header { font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; border-bottom: 2px solid var(--line); }
+.adm-prod-name strong { display: block; font-size: 14px; line-height: 1.35; }
+.adm-prod-slug { font-size: 11.5px; color: var(--muted); word-break: break-all; }
+.adm-prod-badges { display: inline-flex; gap: 5px; margin-top: 4px; flex-wrap: wrap; }
+.adm-prod-badges em { font-style: normal; font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+.b-tiktok { background: linear-gradient(90deg,#ff0050,#00f2ea); color: #fff; }
+.b-feat { background: var(--green-soft); color: var(--green); }
+.b-nophoto { background: #fff3e0; color: #e65100; }
+.adm-prod-cell { font-size: 13.5px; color: var(--ink); }
+.adm-prod-price { font-weight: 700; }
+.adm-prod-cell .st-in { font-style: normal; color: var(--green); font-size: 13px; font-weight: 600; }
+.adm-prod-cell .st-out { font-style: normal; color: #c62828; font-size: 13px; font-weight: 600; }
+.adm-prod-acts { display: flex; gap: 6px; }
+.adm-prod-acts button { background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 6px 9px; cursor: pointer; font-size: 14px; }
+.adm-prod-acts button:hover { background: var(--green-soft); }
+
+/* ── Поля редактора (доповнення) ── */
+.adm-field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.adm-field select { border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; font-size: 14px; font-family: inherit; }
+.adm-checks-row { display: flex; gap: 22px; flex-wrap: wrap; margin-bottom: 18px; }
+
+/* ── Адаптив адмінки ── */
+@media (max-width: 860px) {
+  .adm-shell { grid-template-columns: 1fr; }
+  .adm-sidebar { position: fixed; top: 0; left: 0; bottom: 0; z-index: 50; width: 240px; border-radius: 0; transform: translateX(-100%); transition: transform .2s; }
+  .adm-sidebar.open { transform: translateX(0); }
+  .adm-burger { display: block; }
+  .adm-prod-row { grid-template-columns: 1fr 90px 80px; }
+  .adm-prod-row > span:nth-child(2), .adm-prod-header > span:nth-child(2),
+  .adm-prod-cell:nth-of-type(2) { display: none; }
+  .adm-field-row { grid-template-columns: 1fr; }
+}
