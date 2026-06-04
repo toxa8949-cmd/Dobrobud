@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from 'react';
 type Tier = { min: number; type: 'percent' | 'amount'; value: number };
 type Bundle = {
   id: number; slug: string; title: string; description: string | null;
-  emoji: string | null; product_ids: number[]; discount_tiers: Tier[]; published: boolean;
+  emoji: string | null; image?: string | null; product_ids: number[]; discount_tiers: Tier[]; published: boolean;
 };
 type Prod = { id: number; title: string; brand: string | null; price: number | null };
 
@@ -63,6 +63,13 @@ export default function BundlesPanel({ headers }: { headers: () => HeadersInit }
     setFound((data.products ?? []).slice(0, 12));
   };
 
+  const showTiktok = async () => {
+    const res = await fetch(`/api/admin/products?stock=&page=1&sort=new`, { headers: headers() });
+    const data = await res.json();
+    const tiktok = (data.products ?? []).filter((p: any) => p.is_tiktok).slice(0, 20);
+    setFound(tiktok.length ? tiktok : (data.products ?? []).slice(0, 12));
+  };
+
   const addProduct = (p: Prod) => {
     if (chosen.find((c) => c.id === p.id)) return;
     setChosen((prev) => [...prev, p]);
@@ -110,13 +117,16 @@ export default function BundlesPanel({ headers }: { headers: () => HeadersInit }
         </div>
 
         <div className="adm-field-row">
-          <label className="adm-field" style={{ maxWidth: 90 }}><span>Емодзі</span>
+          <label className="adm-field" style={{ maxWidth: 90 }}><span>Емодзі (запас)</span>
             <input value={edit.emoji ?? ''} maxLength={4} onChange={(e) => setEdit({ ...edit, emoji: e.target.value })} />
           </label>
           <label className="adm-field"><span>Назва набору</span>
             <input value={edit.title ?? ''} onChange={(e) => setEdit({ ...edit, title: e.target.value })} placeholder="Набір для миття авто" />
           </label>
         </div>
+        <label className="adm-field"><span>Картинка набору (URL обкладинки)</span>
+          <input value={(edit as any).image ?? ''} onChange={(e) => setEdit({ ...edit, image: e.target.value } as any)} placeholder="https://..." />
+        </label>
         <label className="adm-field"><span>URL (slug) — порожнім для авто</span>
           <input value={edit.slug ?? ''} onChange={(e) => setEdit({ ...edit, slug: e.target.value })} placeholder="nabir-dlya-myttya" />
         </label>
@@ -140,19 +150,23 @@ export default function BundlesPanel({ headers }: { headers: () => HeadersInit }
         </div>
 
         <div className="adm-field">
-          <span>Додати товар (пошук за назвою)</span>
+          <span>Додати товар</span>
           <div className="bnd-search">
-            <input value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && doSearch()} placeholder="Напр. шампунь…" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && doSearch()} placeholder="Пошук за назвою…" />
             <button className="adm-btn-ghost" onClick={doSearch}>Знайти</button>
+            <button className="adm-btn-ghost" onClick={showTiktok}>🔥 З TikTok</button>
           </div>
           {found.length > 0 && (
             <div className="bnd-found">
-              {found.map((p) => (
-                <div className="bnd-found-item" key={p.id} onClick={() => addProduct(p)}>
-                  <span>{p.title}</span>
-                  <span className="bnd-price">{p.price ? `${fmt(p.price)} ₴` : '—'} +</span>
-                </div>
-              ))}
+              {found.map((p) => {
+                const already = chosen.find((c) => c.id === p.id);
+                return (
+                  <div className={`bnd-found-item ${already ? 'added' : ''}`} key={p.id} onClick={() => addProduct(p)}>
+                    <span>{p.title}</span>
+                    <span className="bnd-price">{p.price ? `${fmt(p.price)} ₴` : '—'} {already ? '✓' : '+'}</span>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

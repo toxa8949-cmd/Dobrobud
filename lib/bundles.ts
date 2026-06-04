@@ -13,6 +13,7 @@ export type Bundle = {
   title: string;
   description: string | null;
   emoji: string;
+  image: string | null;
   product_ids: number[];
   discount_tiers: DiscountTier[];
   published: boolean;

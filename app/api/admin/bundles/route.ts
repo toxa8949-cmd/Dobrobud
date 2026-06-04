@@ -4,9 +4,19 @@ import { checkAuth, adminDb, unauthorized, noDb } from '@/lib/admin';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
+const TRANSLIT: Record<string, string> = {
+  а:'a',б:'b',в:'v',г:'h',ґ:'g',д:'d',е:'e',є:'ie',ж:'zh',з:'z',и:'y',і:'i',ї:'i',й:'i',
+  к:'k',л:'l',м:'m',н:'n',о:'o',п:'p',р:'r',с:'s',т:'t',у:'u',ф:'f',х:'kh',ц:'ts',
+  ч:'ch',ш:'sh',щ:'shch',ь:'',ю:'iu',я:'ia',
+};
 const slugify = (s: string) =>
-  s.toLowerCase().replace(/['’"]/g, '').replace(/[^a-zа-яіїєґ0-9]+/gi, '-')
-    .replace(/^-+|-+$/g, '').slice(0, 80);
+  s.toLowerCase()
+    .split('')
+    .map((ch) => (ch in TRANSLIT ? TRANSLIT[ch] : ch))
+    .join('')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
 
 export async function GET(req: NextRequest) {
   if (!checkAuth(req)) return unauthorized();
@@ -35,6 +45,7 @@ export async function POST(req: NextRequest) {
     title,
     description: b.description ? String(b.description) : null,
     emoji: String(b.emoji ?? '📦').trim() || '📦',
+    image: b.image ? String(b.image).trim() : null,
     product_ids: Array.isArray(b.product_ids) ? b.product_ids.map(Number) : [],
     discount_tiers: Array.isArray(b.discount_tiers) ? b.discount_tiers : [],
     published: b.published !== false,
@@ -58,6 +69,7 @@ export async function PATCH(req: NextRequest) {
   if (b.slug !== undefined) patch.slug = String(b.slug).trim();
   if (b.description !== undefined) patch.description = b.description ? String(b.description) : null;
   if (b.emoji !== undefined) patch.emoji = String(b.emoji).trim() || '📦';
+  if (b.image !== undefined) patch.image = b.image ? String(b.image).trim() : null;
   if (b.product_ids !== undefined) patch.product_ids = Array.isArray(b.product_ids) ? b.product_ids.map(Number) : [];
   if (b.discount_tiers !== undefined) patch.discount_tiers = Array.isArray(b.discount_tiers) ? b.discount_tiers : [];
   if (b.published !== undefined) patch.published = !!b.published;

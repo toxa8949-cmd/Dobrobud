@@ -1076,3 +1076,23 @@ a { color: inherit; text-decoration: none; }
 .bnd-tiers { display: flex; flex-direction: column; gap: 8px; }
 .bnd-tier { display: flex; align-items: center; gap: 8px; font-size: 13.5px; }
 .bnd-tier input, .bnd-tier select { border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 13.5px; font-family: inherit; }
+
+/* ── Набори на сторінці TikTok ── */
+.tiktok-sets { margin-bottom: 28px; }
+.tiktok-sets-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
+.set-card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: transform .14s, box-shadow .14s; }
+.set-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px rgba(0,0,0,.1); }
+.set-card-img { position: relative; height: 160px; background: var(--bg); display: grid; place-items: center; overflow: hidden; }
+.set-card-img img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+.set-card-emoji { font-size: 60px; }
+.set-card-badge { position: absolute; top: 10px; left: 10px; background: linear-gradient(90deg,#ff0050,#00f2ea); color: #fff; font-size: 11px; font-weight: 600; padding: 4px 11px; border-radius: 20px; }
+.set-card-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 6px; }
+.set-card-name { font-size: 15px; font-weight: 700; line-height: 1.3; }
+.set-card-meta { font-size: 13px; color: var(--green); font-weight: 600; }
+.set-card-btn { font-size: 14px; font-weight: 600; color: var(--green); margin-top: 4px; }
+
+/* Бейдж набору в hero-каруселі */
+.hero-card-badge-set { background: linear-gradient(90deg, #f0a020, #ff7a00); box-shadow: 0 4px 12px rgba(240,160,32,.3); }
+
+/* Доданий товар у пошуку наборів */
+.bnd-found-item.added { background: var(--green-soft); border-color: var(--green-bright); }

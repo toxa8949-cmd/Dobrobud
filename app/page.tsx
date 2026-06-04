@@ -1,4 +1,5 @@
 import { getHomeSections } from '@/lib/supabase';
+import { getBundles } from '@/lib/bundles';
 import ProductRow from '@/components/ProductRow';
 import HeroTikTok from '@/components/HeroTikTok';
 
@@ -8,6 +9,7 @@ const fmtCount = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
 
 export default async function HomePage() {
   const h = await getHomeSections();
+  const bundles = await getBundles();
 
   return (
     <>
@@ -36,7 +38,7 @@ export default async function HomePage() {
               </div>
             </div>
           </div>
-          <HeroTikTok products={h.tiktok} />
+          <HeroTikTok products={h.tiktok} bundles={bundles} />
         </div>
       </section>
 
