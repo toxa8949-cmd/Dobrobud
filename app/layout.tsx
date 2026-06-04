@@ -38,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <h4>Інформація</h4>
                 <a href="/about">Про магазин</a>
                 <a href="/delivery">Доставка та оплата</a>
+                <a href="/faq">Часті питання</a>
                 <a href="/about">Контакти</a>
               </div>
               <div>
