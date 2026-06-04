@@ -8,6 +8,8 @@ export interface CartItem {
   title: string;
   price: number;
   qty: number;
+  image?: string;
+  oldPrice?: number; // оригінальна ціна (для показу економії від набору)
 }
 
 interface CartContextValue {

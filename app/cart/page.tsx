@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useCart } from '@/lib/cart';
 
 const fmt = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
@@ -10,17 +10,34 @@ export default function CartPage() {
   const [done, setDone] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
-  const [form, setForm] = useState({ name: '', phone: '', city: '', note: '' });
+  const [delivery, setDelivery] = useState<'np' | 'pickup'>('np');
+  const [form, setForm] = useState({ name: '', phone: '+380', city: '', branch: '', note: '' });
+
+  // Економія: сума (oldPrice - price) по всіх товарах
+  const savings = useMemo(
+    () => items.reduce((s, i) => s + ((i.oldPrice ?? i.price) - i.price) * i.qty, 0),
+    [items]
+  );
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSending(true);
     try {
+      const city =
+        delivery === 'pickup'
+          ? 'Самовивіз (Любар)'
+          : `${form.city}, відділення №${form.branch}`;
       const res = await fetch('/api/orders', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, items }),
+        body: JSON.stringify({
+          name: form.name,
+          phone: form.phone,
+          city,
+          note: form.note,
+          items,
+        }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Помилка відправки');
@@ -38,7 +55,7 @@ export default function CartPage() {
       <div className="cart-empty">
         <span className="big-ico">✓</span>
         <h2>Замовлення прийнято!</h2>
-        <p>Ми зв'яжемося з вами найближчим часом для підтвердження.</p>
+        <p>Ми зв&apos;яжемося з вами найближчим часом для підтвердження.</p>
         <a className="btn-light-green" href="/">На головну</a>
       </div>
     );
@@ -65,9 +82,22 @@ export default function CartPage() {
         <div className="cart-items">
           {items.map((i) => (
             <div className="cart-row" key={i.id}>
+              <span className="cart-row-img">
+                {i.image ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={i.image} alt={i.title} />
+                ) : (
+                  <span className="cart-row-noimg">📦</span>
+                )}
+              </span>
               <div className="cart-row-info">
                 <a href={`/product/${i.slug}`} className="cart-row-title">{i.title}</a>
-                <span className="cart-row-price">{fmt(i.price)} ₴ / шт</span>
+                <span className="cart-row-price">
+                  {i.oldPrice && i.oldPrice > i.price && (
+                    <span className="cart-row-old">{fmt(i.oldPrice)} ₴</span>
+                  )}
+                  {fmt(i.price)} ₴ / шт
+                </span>
               </div>
               <div className="cart-qty">
                 <button onClick={() => setQty(i.id, i.qty - 1)} aria-label="Менше">−</button>
@@ -81,22 +111,66 @@ export default function CartPage() {
         </div>
 
         <form className="cart-checkout" onSubmit={submit}>
+          {savings > 0 && (
+            <div className="cart-savings">
+              <span>🎉 Ваша економія</span>
+              <strong>{fmt(savings)} ₴</strong>
+            </div>
+          )}
           <div className="cart-total">
             <span>Разом:</span>
             <strong>{fmt(total)} ₴</strong>
           </div>
+
+          <label className="cart-label">Спосіб доставки</label>
+          <div className="cart-delivery">
+            <button
+              type="button"
+              className={delivery === 'np' ? 'on' : ''}
+              onClick={() => setDelivery('np')}
+            >
+              📦 Нова Пошта
+            </button>
+            <button
+              type="button"
+              className={delivery === 'pickup' ? 'on' : ''}
+              onClick={() => setDelivery('pickup')}
+            >
+              🏪 Самовивіз
+            </button>
+          </div>
+
           <input
-            required placeholder="Ваше ім'я"
+            required placeholder="Ваше ім'я та прізвище"
             value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
           <input
-            required type="tel" placeholder="Телефон"
-            value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            required type="tel" placeholder="+380 XX XXX XX XX"
+            value={form.phone}
+            onChange={(e) => {
+              let v = e.target.value.replace(/[^\d+]/g, '');
+              if (!v.startsWith('+380')) v = '+380' + v.replace(/^\+?380?/, '');
+              setForm({ ...form, phone: v.slice(0, 13) });
+            }}
           />
-          <input
-            required placeholder="Місто та відділення"
-            value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })}
-          />
+
+          {delivery === 'np' ? (
+            <>
+              <input
+                required placeholder="Місто (напр. Київ)"
+                value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })}
+              />
+              <input
+                required placeholder="Номер відділення / поштомату"
+                value={form.branch} onChange={(e) => setForm({ ...form, branch: e.target.value })}
+              />
+            </>
+          ) : (
+            <p className="cart-pickup-note">
+              Самовивіз з нашого магазину: вул. Житомирська, Любар, Житомирська обл.
+            </p>
+          )}
+
           <textarea
             placeholder="Коментар до замовлення (необов'язково)"
             value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })}
@@ -105,6 +179,7 @@ export default function CartPage() {
           <button type="submit" className="buy-btn" disabled={sending}>
             {sending ? 'Відправляємо…' : 'Оформити замовлення'}
           </button>
+          <p className="cart-checkout-note">Менеджер зв&apos;яжеться для підтвердження</p>
         </form>
       </div>
     </>

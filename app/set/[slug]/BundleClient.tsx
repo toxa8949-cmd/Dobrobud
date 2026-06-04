@@ -45,8 +45,16 @@ export default function BundleClient({
     if (chosen.length === 0) return;
     const ratio = subtotal > 0 ? total / subtotal : 1;
     chosen.forEach((p) => {
-      const discounted = Math.round((p.price ?? 0) * ratio);
-      add({ id: p.id, slug: p.slug, title: p.title, price: discounted }, 1);
+      const orig = p.price ?? 0;
+      const discounted = Math.round(orig * ratio);
+      add({
+        id: p.id,
+        slug: p.slug,
+        title: p.title,
+        price: discounted,
+        oldPrice: discounted < orig ? orig : undefined,
+        image: p.images?.[0],
+      }, 1);
     });
     setAdded(true);
   };
