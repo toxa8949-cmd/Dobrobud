@@ -31,6 +31,20 @@ export default async function ArticlePage({
 
   return (
     <div className="article">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: a.title,
+            description: a.excerpt,
+            datePublished: a.date,
+            author: { '@type': 'Organization', name: 'Добробуд' },
+            publisher: { '@type': 'Organization', name: 'Добробуд' },
+          }),
+        }}
+      />
       <a className="article-back" href="/blog">← Усі статті</a>
       <div className="article-emoji">{a.emoji}</div>
       <div className="article-date">{fmtDate(a.date)}</div>
