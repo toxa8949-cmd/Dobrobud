@@ -49,7 +49,7 @@ export default async function ArticlePage({
       <h1>{a.title}</h1>
       <div className="article-body">
         {a.body.map((p, i) => (
-          <p key={i}>{p}</p>
+          <p key={i} dangerouslySetInnerHTML={{ __html: p }} />
         ))}
       </div>
     </div>
