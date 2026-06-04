@@ -5,12 +5,14 @@ import DashboardPanel from './DashboardPanel';
 import OrdersPanel from './OrdersPanel';
 import ProductsPanel from './ProductsPanel';
 import BlogPanel from './BlogPanel';
+import BundlesPanel from './BundlesPanel';
 
-type Tab = 'dashboard' | 'products' | 'orders' | 'blog';
+type Tab = 'dashboard' | 'products' | 'bundles' | 'orders' | 'blog';
 
 const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: 'dashboard', label: 'Дашборд', icon: '▦' },
   { key: 'products', label: 'Товари', icon: '📦' },
+  { key: 'bundles', label: 'Набори', icon: '🎁' },
   { key: 'orders', label: 'Замовлення', icon: '🛍️' },
   { key: 'blog', label: 'Блог', icon: '📄' },
 ];
@@ -18,6 +20,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
 const TITLES: Record<Tab, string> = {
   dashboard: 'Дашборд',
   products: 'Товари',
+  bundles: 'Набори',
   orders: 'Замовлення',
   blog: 'Блог',
 };
@@ -88,6 +91,7 @@ export default function AdminClient() {
         <div className="adm-content">
           {tab === 'dashboard' && <DashboardPanel headers={headers} />}
           {tab === 'products' && <ProductsPanel headers={headers} />}
+          {tab === 'bundles' && <BundlesPanel headers={headers} />}
           {tab === 'orders' && <OrdersPanel headers={headers} />}
           {tab === 'blog' && <BlogPanel headers={headers} />}
         </div>

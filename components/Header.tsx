@@ -65,6 +65,7 @@ export default function Header() {
           )}
         </div>
         <a href="/tiktok" className="nav-tiktok">TikTok 🔥</a>
+        <a href="/sets">Набори</a>
         <a href="/delivery">Доставка</a>
         <a href="/about">Про нас</a>
         <a href="/blog">Блог</a>
@@ -93,6 +94,7 @@ export default function Header() {
               ))}
             </details>
           ))}
+          <a href="/sets" onClick={() => setMenuOpen(false)}>Набори</a>
           <a href="/delivery" onClick={() => setMenuOpen(false)}>Доставка</a>
           <a href="/about" onClick={() => setMenuOpen(false)}>Про нас</a>
           <a href="/blog" onClick={() => setMenuOpen(false)}>Блог</a>

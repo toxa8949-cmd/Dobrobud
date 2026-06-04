@@ -15,6 +15,22 @@ export async function GET(req: NextRequest) {
   if (!client) return noDb();
 
   const sp = req.nextUrl.searchParams;
+
+  // Вибірка конкретних товарів за id (для редактора наборів)
+  const ids = sp.get('ids');
+  if (ids) {
+    const idList = ids.split(',').map(Number).filter(Boolean);
+    const { data, error } = await client
+      .from('products')
+      .select('id, slug, title, brand, price')
+      .in('id', idList);
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    // зберігаємо порядок як у запиті
+    const map = new Map((data ?? []).map((p) => [p.id, p]));
+    const ordered = idList.map((id) => map.get(id)).filter(Boolean);
+    return NextResponse.json({ products: ordered, total: ordered.length });
+  }
+
   const type = sp.get('type') || '';
   const q = sp.get('q') || '';
   const brand = sp.get('brand') || '';
