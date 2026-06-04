@@ -314,6 +314,7 @@ a { color: inherit; text-decoration: none; }
 .reset-btn:hover { border-color: var(--green-bright); color: var(--green); }
 
 /* Список категорій у фільтрах */
+.filters-toggle { display: none; }
 .filter-cats { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; max-height: 340px; overflow-y: auto; }
 .filter-sections { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .filter-sections a {
@@ -374,9 +375,6 @@ a { color: inherit; text-decoration: none; }
 .pagination .dots { color: var(--muted); padding: 0 4px; }
 
 @media (max-width: 900px) {
-  .catalog-layout { grid-template-columns: 1fr; }
-  .filters { position: static; flex-direction: row; flex-wrap: wrap; }
-  .filter-group { flex: 1; min-width: 130px; }
   .catalog-main .grid { grid-template-columns: repeat(2, 1fr); }
 }
 @media (max-width: 520px) {
