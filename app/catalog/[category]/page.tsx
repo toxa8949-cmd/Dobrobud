@@ -53,6 +53,7 @@ export default async function CatalogPage({
   const filters: CatalogFilters = {
     brand: q.brand,
     group: q.sub,
+    subcategory: q.sub,
     size: q.size,
     maxPrice: Number(q.maxPrice) || undefined,
     inStockOnly: q.inStock === '1',
