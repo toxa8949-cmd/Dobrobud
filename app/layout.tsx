@@ -25,7 +25,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <footer className="site-footer">
             <div className="footer-cols">
               <div>
-                <div className="footer-logo"><span className="logo-mark">⚡</span> Добробуд</div>
+                <div className="footer-logo">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logo-white.png" alt="Добробуд" className="footer-logo-img" />
+                </div>
                 <p>Автохімія, електротранспорт та інструмент з доставкою по всій Україні.</p>
               </div>
               <div>
