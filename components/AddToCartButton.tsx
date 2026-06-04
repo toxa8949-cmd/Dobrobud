@@ -9,18 +9,20 @@ export default function AddToCartButton({
   title,
   price,
   disabled,
+  image,
 }: {
   id: number;
   slug: string;
   title: string;
   price: number;
   disabled?: boolean;
+  image?: string;
 }) {
   const { add } = useCart();
   const [added, setAdded] = useState(false);
 
   const handle = () => {
-    add({ id, slug, title, price });
+    add({ id, slug, title, price, image });
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };

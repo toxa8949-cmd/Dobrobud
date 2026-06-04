@@ -9,19 +9,21 @@ export default function BuyBox({
   title,
   price,
   inStock,
+  image,
 }: {
   id: number;
   slug: string;
   title: string;
   price: number;
   inStock: boolean;
+  image?: string;
 }) {
   const { add } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
 
   const handle = () => {
-    add({ id, slug, title, price }, qty);
+    add({ id, slug, title, price, image }, qty);
     setAdded(true);
     setTimeout(() => setAdded(false), 1600);
   };

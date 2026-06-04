@@ -8,18 +8,20 @@ export default function QuickBuy({
   slug,
   title,
   price,
+  image,
 }: {
   id: number;
   slug: string;
   title: string;
   price: number;
+  image?: string;
 }) {
   const { add } = useCart();
   const [added, setAdded] = useState(false);
   const buy = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    add({ id, slug, title, price });
+    add({ id, slug, title, price, image });
     setAdded(true);
     setTimeout(() => setAdded(false), 1400);
   };
