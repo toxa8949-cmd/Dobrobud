@@ -1357,6 +1357,8 @@ img { max-width: 100%; height: auto; }
 
 /* ── Лого-зображення ── */
 .logo-img { height: 38px; width: auto; display: block; }
+.logo { align-self: center; }
+.header-nav { align-items: center; }
 .footer-logo-img { height: 36px; width: auto; display: block; }
 @media (max-width: 768px) {
   .logo-img { height: 32px; }
