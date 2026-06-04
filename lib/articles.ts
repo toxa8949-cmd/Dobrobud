@@ -225,3 +225,17 @@ export async function getArticleBySlug(slug: string): Promise<Article | undefine
     return getArticle(slug);
   }
 }
+
+// Діагностика: показує, звідки беруться статті і чи є помилка
+export async function getArticlesDebug(): Promise<{ source: string; count: number; err: string; sample: number }> {
+  if (!supabase) return { source: 'НЕМАЄ КЛІЄНТА (env не задано)', count: ARTICLES.length, err: '', sample: 0 };
+  try {
+    const { data, error } = await supabase.from('articles').select('*').eq('published', true);
+    if (error) return { source: 'КОД (помилка бази)', count: ARTICLES.length, err: error.message, sample: 0 };
+    if (!data || data.length === 0) return { source: 'КОД (база порожня)', count: ARTICLES.length, err: 'data порожня', sample: 0 };
+    const sample = (data[0] as DbArticle).body?.length ?? 0;
+    return { source: 'БАЗА', count: data.length, err: '', sample };
+  } catch (e: any) {
+    return { source: 'КОД (виняток)', count: ARTICLES.length, err: String(e?.message ?? e), sample: 0 };
+  }
+}
