@@ -154,3 +154,58 @@ export const ARTICLES: Article[] = [
 export function getArticle(slug: string): Article | undefined {
   return ARTICLES.find((a) => a.slug === slug);
 }
+
+// ─── Читання з бази (Supabase) з фоллбеком на статичні статті ───
+import { supabase } from './supabase';
+
+// Перетворює рядок body (абзаци через подвійний \n) у масив
+function splitBody(body: string): string[] {
+  return body.split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean);
+}
+
+type DbArticle = {
+  slug: string; title: string; excerpt: string | null;
+  emoji: string | null; body: string; created_at: string; published: boolean;
+};
+
+function fromDb(r: DbArticle): Article {
+  return {
+    slug: r.slug,
+    title: r.title,
+    excerpt: r.excerpt ?? '',
+    emoji: r.emoji ?? '📝',
+    date: (r.created_at ?? '').slice(0, 10),
+    body: splitBody(r.body ?? ''),
+  };
+}
+
+export async function getArticles(): Promise<Article[]> {
+  if (!supabase) return ARTICLES;
+  try {
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .eq('published', true)
+      .order('created_at', { ascending: false });
+    if (error || !data || data.length === 0) return ARTICLES;
+    return (data as DbArticle[]).map(fromDb);
+  } catch {
+    return ARTICLES;
+  }
+}
+
+export async function getArticleBySlug(slug: string): Promise<Article | undefined> {
+  if (!supabase) return getArticle(slug);
+  try {
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .eq('slug', slug)
+      .eq('published', true)
+      .single();
+    if (error || !data) return getArticle(slug);
+    return fromDb(data as DbArticle);
+  } catch {
+    return getArticle(slug);
+  }
+}

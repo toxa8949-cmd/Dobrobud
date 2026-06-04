@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { ARTICLES, getArticle } from '@/lib/articles';
+import { getArticleBySlug } from '@/lib/articles';
 
-export function generateStaticParams() {
-  return ARTICLES.map((a) => ({ slug: a.slug }));
-}
+export const revalidate = 60;
 
 export async function generateMetadata({
   params,
@@ -12,13 +10,13 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const a = getArticle(slug);
+  const a = await getArticleBySlug(slug);
   if (!a) return { title: 'Стаття — Добробуд' };
   return { title: `${a.title} — Добробуд`, description: a.excerpt };
 }
 
 const fmtDate = (d: string) =>
-  new Date(d).toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+  d ? new Date(d).toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
 
 export default async function ArticlePage({
   params,
@@ -26,7 +24,7 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const a = getArticle(slug);
+  const a = await getArticleBySlug(slug);
   if (!a) notFound();
 
   return (

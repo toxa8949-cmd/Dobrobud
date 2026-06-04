@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import { ARTICLES } from '@/lib/articles';
+import { getArticles } from '@/lib/articles';
+
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: 'Блог — Добробуд',
@@ -7,9 +9,10 @@ export const metadata: Metadata = {
 };
 
 const fmtDate = (d: string) =>
-  new Date(d).toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' });
+  d ? new Date(d).toLocaleDateString('uk-UA', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
 
-export default function BlogPage() {
+export default async function BlogPage() {
+  const articles = await getArticles();
   return (
     <div className="info-page">
       <div className="info-hero">
@@ -18,7 +21,7 @@ export default function BlogPage() {
       </div>
 
       <div className="blog-grid">
-        {ARTICLES.map((a) => (
+        {articles.map((a) => (
           <a key={a.slug} className="blog-card" href={`/blog/${a.slug}`}>
             <div className="blog-card-img">{a.emoji}</div>
             <div className="blog-card-body">
