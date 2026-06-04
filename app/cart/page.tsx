@@ -7,6 +7,9 @@ const fmt = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
 
 export default function CartPage() {
   const { items, total, setQty, remove, clear } = useCart();
+  const MIN_ORDER = 500;
+  const belowMin = total < MIN_ORDER;
+  const needMore = MIN_ORDER - total;
   const [done, setDone] = useState(false);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
@@ -22,6 +25,10 @@ export default function CartPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (belowMin) {
+      setError(`Мінімальна сума замовлення — ${fmt(MIN_ORDER)} ₴. Додайте товарів ще на ${fmt(needMore)} ₴.`);
+      return;
+    }
     setSending(true);
     try {
       const city =
@@ -129,6 +136,19 @@ export default function CartPage() {
             <strong>{fmt(total)} ₴</strong>
           </div>
 
+          {belowMin && (
+            <div className="cart-min">
+              <div className="cart-min-bar">
+                <div className="cart-min-fill" style={{ width: `${Math.min(100, (total / MIN_ORDER) * 100)}%` }} />
+              </div>
+              <p className="cart-min-text">
+                Мінімальна сума замовлення — <b>{fmt(MIN_ORDER)} ₴</b>.<br />
+                Додайте товарів ще на <b>{fmt(needMore)} ₴</b> 🛒
+              </p>
+              <a href="/catalog/chemistry" className="cart-min-link">Додати товари →</a>
+            </div>
+          )}
+
           <label className="cart-label">Спосіб доставки</label>
           <div className="cart-delivery">
             <button
@@ -183,8 +203,8 @@ export default function CartPage() {
             value={form.note} onChange={(e) => setForm({ ...form, note: e.target.value })}
           />
           {error && <p className="form-error">{error}</p>}
-          <button type="submit" className="buy-btn" disabled={sending}>
-            {sending ? 'Відправляємо…' : 'Оформити замовлення'}
+          <button type="submit" className="buy-btn" disabled={sending || belowMin}>
+            {sending ? 'Відправляємо…' : belowMin ? `Додайте ще на ${fmt(needMore)} ₴` : 'Оформити замовлення'}
           </button>
           <p className="cart-checkout-note">Менеджер зв&apos;яжеться для підтвердження</p>
         </form>

@@ -1330,3 +1330,12 @@ img { max-width: 100%; height: auto; }
   .cart-row-sum { grid-area: sum; min-width: 0; align-self: center; }
   .cart-remove { grid-area: remove; justify-self: end; align-self: start; }
 }
+
+/* ── Мінімальна сума замовлення ── */
+.cart-min { background: #fff8e6; border: 1px solid #f0c850; border-radius: 12px; padding: 14px; }
+.cart-min-bar { height: 8px; background: #f0e2bc; border-radius: 10px; overflow: hidden; margin-bottom: 10px; }
+.cart-min-fill { height: 100%; background: linear-gradient(90deg, #f0a020, #ffc24d); border-radius: 10px; transition: width .3s; }
+.cart-min-text { font-size: 13px; color: #8a6300; line-height: 1.5; margin: 0 0 10px; }
+.cart-min-text b { font-weight: 700; }
+.cart-min-link { display: inline-block; font-size: 13px; font-weight: 600; color: var(--green); }
+.cart-min-link:hover { text-decoration: underline; }
