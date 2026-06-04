@@ -49,9 +49,18 @@ export default async function ArticlePage({
       <h1>{a.title}</h1>
       <div className="article-body">
         {a.body.map((p, i) => (
-          <p key={i} dangerouslySetInnerHTML={{ __html: p }} />
+          <p key={i} dangerouslySetInnerHTML={{ __html: renderLinks(p) }} />
         ))}
       </div>
     </div>
   );
+}
+
+// Перетворює markdown-посилання [текст](url) на HTML <a>.
+// Якщо в тексті вже HTML <a> — лишає як є.
+function renderLinks(text: string): string {
+  return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, label, url) => {
+    const safeUrl = String(url).replace(/"/g, '&quot;');
+    return `<a href="${safeUrl}">${label}</a>`;
+  });
 }
