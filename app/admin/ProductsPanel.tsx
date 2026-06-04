@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
+import ImageUpload from './ImageUpload';
 
 interface AdminProduct {
   id: number;
@@ -142,8 +143,11 @@ export default function ProductsPanel({ headers }: { headers: () => HeadersInit 
         <label className="adm-field"><span>Опис</span>
           <textarea rows={6} value={edit.description ?? ''} onChange={(e) => setEdit({ ...edit, description: e.target.value })} />
         </label>
-        <label className="adm-field"><span>Фото (по одному URL на рядок)</span>
-          <textarea rows={3} value={imgStr} onChange={(e) => setEdit({ ...edit, images: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) })} placeholder="https://..." />
+        <label className="adm-field"><span>Фото товару</span>
+          <ImageUpload images={edit.images ?? []} onChange={(next) => setEdit({ ...edit, images: next })} headers={headers} multiple />
+        </label>
+        <label className="adm-field"><span>…або вставте URL (по одному на рядок)</span>
+          <textarea rows={2} value={imgStr} onChange={(e) => setEdit({ ...edit, images: e.target.value.split('\n').map((s) => s.trim()).filter(Boolean) })} placeholder="https://..." />
         </label>
         <div className="adm-checks-row">
           <label className="adm-check"><input type="checkbox" checked={!!edit.in_stock} onChange={(e) => setEdit({ ...edit, in_stock: e.target.checked })} /> В наявності</label>

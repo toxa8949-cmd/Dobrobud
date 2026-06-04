@@ -1096,3 +1096,13 @@ a { color: inherit; text-decoration: none; }
 
 /* Доданий товар у пошуку наборів */
 .bnd-found-item.added { background: var(--green-soft); border-color: var(--green-bright); }
+
+/* ── Завантажувач фото в адмінці ── */
+.img-upload-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+.img-thumb { position: relative; width: 90px; height: 90px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); }
+.img-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.img-thumb button { position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; border: none; cursor: pointer; font-size: 12px; line-height: 1; }
+.img-add { width: 90px; height: 90px; border: 1.5px dashed var(--line); border-radius: 10px; background: var(--bg); color: var(--muted); font-size: 13px; font-weight: 600; cursor: pointer; }
+.img-add:hover { border-color: var(--green-bright); color: var(--green); }
+.img-add:disabled { opacity: .6; cursor: wait; }
+.img-upload-hint { font-size: 12px; color: var(--muted); margin: 6px 0 0; }

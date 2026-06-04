@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import ImageUpload from './ImageUpload';
 
 type Tier = { min: number; type: 'percent' | 'amount'; value: number };
 type Bundle = {
@@ -124,7 +125,15 @@ export default function BundlesPanel({ headers }: { headers: () => HeadersInit }
             <input value={edit.title ?? ''} onChange={(e) => setEdit({ ...edit, title: e.target.value })} placeholder="Набір для миття авто" />
           </label>
         </div>
-        <label className="adm-field"><span>Картинка набору (URL обкладинки)</span>
+        <label className="adm-field"><span>Картинка набору (обкладинка)</span>
+          <ImageUpload
+            images={(edit as any).image ? [(edit as any).image] : []}
+            onChange={(next) => setEdit({ ...edit, image: next[0] ?? '' } as any)}
+            headers={headers}
+            multiple={false}
+          />
+        </label>
+        <label className="adm-field"><span>…або вставте URL обкладинки</span>
           <input value={(edit as any).image ?? ''} onChange={(e) => setEdit({ ...edit, image: e.target.value } as any)} placeholder="https://..." />
         </label>
         <label className="adm-field"><span>URL (slug) — порожнім для авто</span>
