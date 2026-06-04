@@ -70,8 +70,10 @@ export default function AboutPage() {
         <h2>Контакти</h2>
         <p>Маєте запитання? Зв'яжіться з нами:</p>
         <ul>
-          <li>📧 Пошта: <a href="mailto:info@dobrobud.ua">info@dobrobud.ua</a></li>
-          <li>📱 Телефон: +38 (0XX) XXX-XX-XX</li>
+          <li>📍 вул. Житомирська, Любар, Житомирська область, 13102</li>
+          <li>📱 <a href="tel:+380674100159">+380 67 410 0159</a></li>
+          <li>📱 Telegram: <a href="https://t.me/ProkopenkoVasyl">@ProkopenkoVasyl</a></li>
+          <li>📱 <a href="https://www.tiktok.com/@pvmorgan">TikTok</a> · <a href="https://facebook.com/lub.dobrobud">Facebook</a></li>
         </ul>
       </section>
     </div>

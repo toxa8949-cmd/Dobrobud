@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Доставка та оплата — Добробуд',
-  description: 'Умови доставки Новою Поштою та самовивозу, способи оплати: картка, накладений платіж, безготівковий розрахунок.',
+  description: 'Умови доставки Новою Поштою та самовивозу. Оплата: повна або часткова передоплата, на ФОП без ПДВ. Магазин у Любарі.',
 };
 
 export default function DeliveryPage() {
@@ -15,6 +15,7 @@ export default function DeliveryPage() {
 
       <section className="info-block">
         <h2>🚚 Доставка</h2>
+        <p className="info-note">Відправляємо за умови повної оплати або часткової передоплати замовлення.</p>
         <div className="info-cards">
           <div className="info-card">
             <span className="info-ico">📦</span>
@@ -24,7 +25,7 @@ export default function DeliveryPage() {
           <div className="info-card">
             <span className="info-ico">🏪</span>
             <strong>Самовивіз</strong>
-            <p>Можна забрати замовлення особисто з нашого магазину — безкоштовно та одразу.</p>
+            <p>Можна забрати замовлення особисто з нашого магазину у Любарі — безкоштовно та одразу.</p>
           </div>
         </div>
       </section>
@@ -34,18 +35,18 @@ export default function DeliveryPage() {
         <div className="info-cards">
           <div className="info-card">
             <span className="info-ico">💳</span>
-            <strong>Карткою онлайн</strong>
-            <p>Оплата банківською карткою Visa або Mastercard при оформленні замовлення.</p>
+            <strong>Повна оплата</strong>
+            <p>Сплачуєте повну вартість замовлення — і ми одразу відправляємо товар.</p>
           </div>
           <div className="info-card">
             <span className="info-ico">💵</span>
-            <strong>Накладений платіж</strong>
-            <p>Оплата при отриманні у відділенні Нової Пошти (післяплата).</p>
+            <strong>Часткова передоплата</strong>
+            <p>Вносите частину суми як передоплату, решту — при отриманні. Зручно для дорогих замовлень.</p>
           </div>
           <div className="info-card">
             <span className="info-ico">🧾</span>
-            <strong>Безготівковий розрахунок</strong>
-            <p>Для юридичних осіб — оплата за реквізитами з ПДВ.</p>
+            <strong>Оплата на ФОП</strong>
+            <p>Безготівковий розрахунок на рахунок ФОП (без ПДВ).</p>
           </div>
         </div>
       </section>
@@ -73,12 +74,17 @@ export default function DeliveryPage() {
       </section>
 
       <section className="info-block info-contacts">
-        <h2>Залишились питання?</h2>
+        <h2>Контакти</h2>
         <p>Зв'яжіться з нами — допоможемо з вибором і оформленням:</p>
         <ul>
-          <li>📧 <a href="mailto:info@dobrobud.ua">info@dobrobud.ua</a></li>
-          <li>📱 +38 (0XX) XXX-XX-XX</li>
+          <li>📍 вул. Житомирська, Любар, Житомирська область, 13102</li>
+          <li>📱 <a href="tel:+380674100159">+380 67 410 0159</a></li>
         </ul>
+        <div className="info-socials">
+          <a href="https://www.tiktok.com/@pvmorgan" target="_blank" rel="noopener noreferrer">TikTok</a>
+          <a href="https://facebook.com/lub.dobrobud" target="_blank" rel="noopener noreferrer">Facebook</a>
+          <a href="https://t.me/ProkopenkoVasyl" target="_blank" rel="noopener noreferrer">Telegram</a>
+        </div>
       </section>
     </div>
   );
