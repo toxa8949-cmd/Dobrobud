@@ -53,7 +53,7 @@ a { color: inherit; text-decoration: none; }
   border-radius: var(--radius-sm); background: var(--bg); font-size: 14px;
 }
 .search input:focus { outline: 2px solid var(--green-bright); border-color: transparent; }
-.header-nav { display: flex; gap: 22px; font-size: 14px; color: var(--muted); align-items: center; margin: 0 auto; }
+.header-nav { display: flex; gap: 22px; font-size: 14px; color: var(--muted); align-items: center; margin-right: auto; }
 .header-nav a:hover { color: var(--green); }
 
 /* Каталог-випадайка (мега-меню) */
@@ -825,4 +825,49 @@ a { color: inherit; text-decoration: none; }
   .trust-row { grid-template-columns: 1fr; }
   .te-sep { display: none; }
   .trust-exp { flex-direction: column; gap: 14px; }
+}
+
+/* ── Інфо-сторінки (Доставка) ── */
+.info-page { max-width: 900px; margin: 0 auto; }
+.info-hero { text-align: center; padding: 32px 0 24px; }
+.info-hero h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
+.info-hero p { font-size: 16px; color: var(--muted); }
+.info-block { margin-bottom: 36px; }
+.info-block h2 { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+.info-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.info-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+.info-card .info-ico { font-size: 30px; display: block; margin-bottom: 10px; }
+.info-card strong { display: block; font-size: 16px; margin-bottom: 6px; }
+.info-card p { font-size: 13.5px; color: var(--muted); line-height: 1.6; }
+.faq { display: flex; flex-direction: column; gap: 10px; }
+.faq-item { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 4px 18px; }
+.faq-item summary { padding: 14px 0; font-size: 15px; font-weight: 600; cursor: pointer; list-style: none; }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after { content: ' +'; float: right; color: var(--muted); font-size: 20px; }
+.faq-item[open] summary::after { content: ' −'; }
+.faq-item p { font-size: 14px; color: var(--muted); line-height: 1.6; padding: 0 0 14px; margin: 0; }
+.info-contacts ul { list-style: none; padding: 0; margin: 10px 0 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
+.info-contacts a { color: var(--green); }
+
+/* ── Блог ── */
+.blog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; padding-bottom: 40px; }
+.blog-card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; transition: transform .14s, box-shadow .14s; }
+.blog-card:hover { transform: translateY(-3px); box-shadow: 0 10px 26px rgba(0,0,0,.08); }
+.blog-card-img { height: 120px; display: grid; place-items: center; font-size: 52px; background: linear-gradient(135deg, var(--green-soft), #f3f9ec); }
+.blog-card-body { padding: 16px 18px; }
+.blog-card-date { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+.blog-card-body h2 { font-size: 17px; font-weight: 700; line-height: 1.3; margin-bottom: 8px; }
+.blog-card-body p { font-size: 13.5px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+.blog-card-more { font-size: 14px; font-weight: 600; color: var(--green); }
+
+/* ── Стаття ── */
+.article { max-width: 720px; margin: 0 auto; padding-bottom: 40px; }
+.article-back { display: inline-block; font-size: 14px; color: var(--muted); margin: 24px 0 20px; }
+.article-back:hover { color: var(--green); }
+.article-emoji { font-size: 64px; }
+.article-date { font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
+.article h1 { font-size: 30px; font-weight: 800; line-height: 1.2; margin-bottom: 24px; }
+.article-body p { font-size: 16px; line-height: 1.8; color: var(--ink); margin-bottom: 18px; }
+@media (max-width: 600px) {
+  .info-hero h1, .article h1 { font-size: 24px; }
 }
