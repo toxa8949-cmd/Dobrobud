@@ -1,6 +1,6 @@
 import { getHomeSections } from '@/lib/supabase';
 import ProductRow from '@/components/ProductRow';
-import TikTokCard from '@/components/TikTokCard';
+import HeroTikTok from '@/components/HeroTikTok';
 
 export const revalidate = 60;
 
@@ -11,50 +11,32 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* Об'єднаний верхній блок: TikTok + промо + категорії */}
-      <section className="home-hero">
-        <div className="home-hero-top">
-          {h.tiktok.length > 0 ? (
-            <div className="hh-tiktok">
-              <div className="tiktok-row-head">
-                <span className="tiktok-badge">🔥 TikTok</span>
-                <div className="tiktok-row-titles">
-                  <h2>Бачили у нашому TikTok?</h2>
-                  <span>Товари з наших відео</span>
-                </div>
-                <a className="tiktok-row-all" href="/tiktok">Усі →</a>
+      {/* Герой-банер з TikTok-каруселлю */}
+      <section className="hero">
+        <div className="hero-grid">
+          <div className="hero-left">
+            <span className="hero-tag">🔥 ТОВАРИ З НАШОГО TIKTOK</span>
+            <h1 className="hero-title">Бачили у нашому <span>TikTok?</span></h1>
+            <p className="hero-sub">
+              Товари, які ви бачили у наших відео — тут. Транспорт, автохімія та
+              інструмент з доставкою по всій Україні.
+            </p>
+            <div className="hero-btns">
+              <a className="hero-btn-primary" href="/tiktok">Дивитися всі →</a>
+              <a className="hero-btn-ghost" href="/catalog">Каталог</a>
+            </div>
+            <div className="hero-perks">
+              <div className="hero-perk">
+                <strong>🚚 Доставка</strong>
+                <span>Нова Пошта або самовивіз</span>
               </div>
-              <div className="prow-scroll">
-                {h.tiktok.map((p) => (
-                  <div className="prow-item" key={p.id}>
-                    <TikTokCard p={p} />
-                  </div>
-                ))}
+              <div className="hero-perk">
+                <strong>🛡️ Гарантія</strong>
+                <span>Офіційний товар</span>
               </div>
             </div>
-          ) : (
-            <div className="hh-tiktok hh-empty">
-              <div className="tiktok-row-head">
-                <span className="tiktok-badge">🔥 TikTok</span>
-                <div className="tiktok-row-titles">
-                  <h2>Стежте за нашим TikTok</h2>
-                  <span>Найкращі товари — у відео</span>
-                </div>
-              </div>
-            </div>
-          )}
-          <div className="hh-promos">
-            <a className="promo-side promo-amber" href="/catalog/chemistry?sort=price-asc">
-              <span className="ps-tag">🏷️ Акція</span>
-              <strong>Автохімія −15%</strong>
-              <span className="ps-sub">До кінця тижня →</span>
-            </a>
-            <a className="promo-side promo-green" href="/catalog/tools">
-              <span className="ps-tag">✨ Новинки</span>
-              <strong>Електроінструмент</strong>
-              <span className="ps-sub">Щойно завезли →</span>
-            </a>
           </div>
+          <HeroTikTok products={h.tiktok} />
         </div>
       </section>
 
