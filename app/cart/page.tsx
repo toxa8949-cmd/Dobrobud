@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useCart } from '@/lib/cart';
 
 const fmt = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
@@ -15,6 +15,20 @@ export default function CartPage() {
   const [error, setError] = useState('');
   const [delivery, setDelivery] = useState<'np' | 'pickup'>('np');
   const [form, setForm] = useState({ name: '', phone: '+380', city: '', branch: '', note: '' });
+
+  // Фото товарів, підвантажені за slug (для позицій без збереженого фото)
+  const [fetchedImages, setFetchedImages] = useState<Record<string, string>>({});
+  useEffect(() => {
+    const need = items
+      .filter((i) => i.kind !== 'bundle' && !i.image && i.slug)
+      .map((i) => i.slug);
+    if (need.length === 0) return;
+    const slugs = Array.from(new Set(need)).join(',');
+    fetch(`/api/product-images?slugs=${encodeURIComponent(slugs)}`)
+      .then((r) => r.json())
+      .then((d) => setFetchedImages((prev) => ({ ...prev, ...(d.images ?? {}) })))
+      .catch(() => {});
+  }, [items]);
 
   // Економія: сума (oldPrice - price) по всіх товарах
   const savings = useMemo(
@@ -90,9 +104,9 @@ export default function CartPage() {
           {items.map((i) => (
             <div className="cart-row" key={i.id}>
               <span className="cart-row-img">
-                {i.image ? (
+                {(i.image || fetchedImages[i.slug]) ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={i.image} alt={i.title} />
+                  <img src={i.image || fetchedImages[i.slug]} alt={i.title} />
                 ) : (
                   <span className="cart-row-noimg">📦</span>
                 )}
