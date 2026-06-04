@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getArticles } from '@/lib/articles';
 
-export const revalidate = 60;
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Блог — Добробуд',
