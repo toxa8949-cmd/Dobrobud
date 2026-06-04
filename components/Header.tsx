@@ -39,8 +39,8 @@ export default function Header() {
   return (
     <header className="site-header">
       <a href="/" className="logo">
-        <span className="logo-mark">⚡</span>
-        <span>Добробуд</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/logo.png" alt="Добробуд" className="logo-img" />
       </a>
 
       <nav className="header-nav">

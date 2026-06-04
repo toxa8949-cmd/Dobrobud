@@ -1354,3 +1354,13 @@ img { max-width: 100%; height: auto; }
 .faq-cta p { font-size: 16px; font-weight: 600; margin: 0 0 16px; }
 .faq-cta-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 @media (max-width: 480px) { .faq-cta-btns { flex-direction: column; } .faq-cta-btns a { width: 100%; } }
+
+/* ── Лого-зображення ── */
+.logo-img { height: 38px; width: auto; display: block; }
+.footer-logo-img { height: 36px; width: auto; display: block; }
+@media (max-width: 768px) {
+  .logo-img { height: 32px; }
+}
+@media (max-width: 480px) {
+  .logo-img { height: 28px; }
+}
