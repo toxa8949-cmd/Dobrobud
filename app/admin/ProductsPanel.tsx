@@ -29,7 +29,7 @@ const fmt = (n: number | null) => (n == null ? '—' : new Intl.NumberFormat('uk
 
 const emptyProduct = (): Partial<AdminProduct> => ({
   title: '', brand: '', price: null, old_price: null, category_type: 'etransport',
-  in_stock: true, description: '', images: [], is_tiktok: false, is_featured: false,
+  in_stock: true, description: '', images: [], is_tiktok: false, is_featured: false, specs: {},
 });
 
 export default function ProductsPanel({ headers }: { headers: () => HeadersInit }) {
@@ -42,6 +42,7 @@ export default function ProductsPanel({ headers }: { headers: () => HeadersInit 
   const [stock, setStock] = useState('');
   const [sort, setSort] = useState('new');
   const [brands, setBrands] = useState<string[]>([]);
+  const [subcats, setSubcats] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [edit, setEdit] = useState<Partial<AdminProduct> | null>(null);
@@ -77,7 +78,8 @@ export default function ProductsPanel({ headers }: { headers: () => HeadersInit 
       const res = await fetch(`/api/admin/brands${type ? `?type=${type}` : ''}`, { headers: headers() });
       const data = await res.json();
       setBrands(data.brands ?? []);
-    } catch { setBrands([]); }
+      setSubcats(data.subcats ?? []);
+    } catch { setBrands([]); setSubcats([]); }
   }, [type, headers]);
 
   useEffect(() => { load(1); loadBrands(); /* eslint-disable-next-line */ }, []);
@@ -140,6 +142,17 @@ export default function ProductsPanel({ headers }: { headers: () => HeadersInit 
             </select>
           </label>
         </div>
+        <label className="adm-field"><span>Підкатегорія (виберіть або впишіть нову)</span>
+          <input
+            list="subcat-list"
+            value={edit.specs?.subcategory ?? ''}
+            onChange={(e) => setEdit({ ...edit, specs: { ...(edit.specs ?? {}), subcategory: e.target.value } })}
+            placeholder="Напр. Ароматизатори, Мастила…"
+          />
+          <datalist id="subcat-list">
+            {subcats.map((s) => <option key={s} value={s} />)}
+          </datalist>
+        </label>
         <label className="adm-field"><span>Опис</span>
           <textarea rows={6} value={edit.description ?? ''} onChange={(e) => setEdit({ ...edit, description: e.target.value })} />
         </label>

@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   if (!client) return noDb();
 
   const type = req.nextUrl.searchParams.get('type') || '';
-  let q = client.from('products').select('brand').not('brand', 'is', null);
+  let q = client.from('products').select('brand, specs').not('brand', 'is', null);
   if (type) q = q.eq('category_type', type);
 
   const { data, error } = await q.limit(5000);
@@ -19,5 +19,15 @@ export async function GET(req: NextRequest) {
 
   const brands = Array.from(new Set((data ?? []).map((r) => r.brand).filter(Boolean)))
     .sort((a, b) => String(a).localeCompare(String(b), 'uk'));
-  return NextResponse.json({ brands });
+
+  // Унікальні підкатегорії зі specs
+  const subcats = Array.from(
+    new Set(
+      (data ?? [])
+        .map((r: any) => r.specs?.subcategory)
+        .filter((s: any) => s && typeof s === 'string')
+    )
+  ).sort((a, b) => String(a).localeCompare(String(b), 'uk'));
+
+  return NextResponse.json({ brands, subcats });
 }

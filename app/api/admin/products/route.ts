@@ -84,6 +84,7 @@ export async function PATCH(req: NextRequest) {
   if (b.is_featured !== undefined) patch.is_featured = !!b.is_featured;
   if (b.images !== undefined) patch.images = Array.isArray(b.images) ? b.images : [];
   if (b.category_type !== undefined) patch.category_type = String(b.category_type);
+  if (b.specs !== undefined && typeof b.specs === 'object' && b.specs) patch.specs = b.specs;
 
   if (Object.keys(patch).length === 0) return NextResponse.json({ error: 'Нема що оновлювати' }, { status: 400 });
 
