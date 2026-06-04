@@ -443,6 +443,15 @@ export async function getCatalogPage(
     if (f.brand) demo = demo.filter((p) => p.brand === f.brand);
     if (f.inStockOnly) demo = demo.filter((p) => p.in_stock);
     if (f.maxPrice) demo = demo.filter((p) => (p.price ?? 0) <= f.maxPrice!);
+    const hasPhoto = (p: Product) => (p.images?.length ?? 0) > 0;
+    demo = [...demo].sort((a, b) => {
+      if (a.in_stock !== b.in_stock) return a.in_stock ? -1 : 1;
+      if (hasPhoto(a) !== hasPhoto(b)) return hasPhoto(a) ? -1 : 1;
+      if (f.sort === 'price-asc') return (a.price ?? 0) - (b.price ?? 0);
+      if (f.sort === 'price-desc') return (b.price ?? 0) - (a.price ?? 0);
+      if (!!a.is_featured !== !!b.is_featured) return a.is_featured ? -1 : 1;
+      return a.id - b.id;
+    });
     return { products: demo, total: demo.length };
   }
 
@@ -467,9 +476,17 @@ export async function getCatalogPage(
     if (f.inStockOnly) q = q.eq('in_stock', true);
     if (f.maxPrice) q = q.lte('price', f.maxPrice);
 
+    // Зверху: товари в наявності та з фото; відсутні й без фото — в кінець
+    q = q
+      .order('in_stock', { ascending: false })
+      .order('has_photo', { ascending: false });
+
     if (f.sort === 'price-asc') q = q.order('price', { ascending: true });
     else if (f.sort === 'price-desc') q = q.order('price', { ascending: false });
-    else q = q.order('is_featured', { ascending: false }).order('id', { ascending: true });
+    else {
+      // Рекомендоване: рекомендовані, далі стабільно за id
+      q = q.order('is_featured', { ascending: false }).order('id', { ascending: true });
+    }
 
     const from = (page - 1) * perPage;
     q = q.range(from, from + perPage - 1);
