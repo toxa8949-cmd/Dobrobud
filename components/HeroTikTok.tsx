@@ -48,18 +48,14 @@ export default function HeroTikTok({ products }: { products: Product[] }) {
         )}
       </a>
 
-      <div className="hero-card-foot">
-        <div className="hero-card-info">
-          {p.brand && <div className="hero-card-brand">{p.brand}</div>}
-          <div className="hero-card-name">{p.title}</div>
-          {p.price ? (
-            <div className="hero-card-price">{fmtPrice(p.price)} ₴</div>
-          ) : (
-            <div className="hero-card-price muted">Уточнюйте</div>
-          )}
-        </div>
-        <a href={`/product/${p.slug}`} className="hero-card-btn">Детальніше →</a>
-      </div>
+      {p.brand && <div className="hero-card-brand">{p.brand}</div>}
+      <div className="hero-card-name">{p.title}</div>
+      {p.price ? (
+        <div className="hero-card-price">{fmtPrice(p.price)} ₴</div>
+      ) : (
+        <div className="hero-card-price muted">Уточнюйте</div>
+      )}
+      <a href={`/product/${p.slug}`} className="hero-card-btn">Детальніше →</a>
 
       {items.length > 1 && (
         <div className="hero-card-dots">
