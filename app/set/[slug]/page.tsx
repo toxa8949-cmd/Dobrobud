@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getBundleBySlug } from '@/lib/bundles';
+import { getBundleBySlug, calcBundle } from '@/lib/bundles';
 import BundleClient from './BundleClient';
 
 export const revalidate = 60;
+
+const fmt = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
 
 export async function generateMetadata({
   params,
@@ -25,12 +27,21 @@ export default async function BundlePage({
   const b = await getBundleBySlug(slug);
   if (!b) notFound();
 
+  // Максимальна економія — якщо взяти всі товари в наявності
+  const inStock = b.products.filter((p) => p.in_stock && p.price);
+  const maxCalc = calcBundle(inStock.map((p) => p.price ?? 0), b.discount_tiers);
+
   return (
     <div className="info-page">
       <div className="bundle-hero">
-        <span className="bundle-badge">{b.emoji} Набір з TikTok</span>
+        <span className="bundle-badge">🔥 Хіт TikTok</span>
         <h1>{b.title}</h1>
         <span className="bundle-count">{b.products.length} товарів у наборі</span>
+        {maxCalc.discount > 0 && (
+          <div className="bundle-hero-save">
+            Купуйте весь набір і економте <b>{fmt(maxCalc.discount)} ₴</b>
+          </div>
+        )}
       </div>
 
       <BundleClient products={b.products} tiers={b.discount_tiers} />

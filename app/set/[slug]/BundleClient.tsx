@@ -15,7 +15,6 @@ export default function BundleClient({
   tiers: DiscountTier[];
 }) {
   const { add } = useCart();
-  // за замовчуванням обрані всі товари в наявності
   const [selected, setSelected] = useState<Set<number>>(
     () => new Set(products.filter((p) => p.in_stock && p.price).map((p) => p.id))
   );
@@ -40,10 +39,10 @@ export default function BundleClient({
   );
 
   const next = nextTier(tiers, chosen.length);
+  const allInStock = products.every((p) => p.in_stock && p.price);
 
   const addBundle = () => {
     if (chosen.length === 0) return;
-    // розподіляємо знижку пропорційно по товарах, щоб у кошику була підсумкова ціна
     const ratio = subtotal > 0 ? total / subtotal : 1;
     chosen.forEach((p) => {
       const discounted = Math.round((p.price ?? 0) * ratio);
@@ -63,22 +62,21 @@ export default function BundleClient({
               key={p.id}
               className={`bundle-item ${on ? 'on' : ''} ${disabled ? 'disabled' : ''}`}
             >
-              <input type="checkbox" checked={on} disabled={disabled} onChange={() => toggle(p.id)} />
+              <span className="bundle-item-check">
+                <input type="checkbox" checked={on} disabled={disabled} onChange={() => toggle(p.id)} />
+              </span>
               <span className="bundle-item-img">
                 {p.images?.[0] ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={p.images[0]} alt={p.title} />
                 ) : (
-                  <span className="bundle-item-noimg">🛒</span>
+                  <span className="bundle-item-noimg">📦</span>
                 )}
               </span>
               <span className="bundle-item-info">
                 <span className="bundle-item-title">{p.title}</span>
                 {p.brand && <span className="bundle-item-brand">{p.brand}</span>}
                 {disabled && <span className="bundle-item-out">Немає в наявності</span>}
-              </span>
-              <span className="bundle-item-right">
-                <span className="bundle-item-price">{p.price ? `${fmt(p.price)} ₴` : '—'}</span>
                 <a
                   href={`/product/${p.slug}`}
                   className="bundle-item-link"
@@ -86,15 +84,28 @@ export default function BundleClient({
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  Детальніше →
+                  Переглянути товар →
                 </a>
               </span>
+              <span className="bundle-item-price">{p.price ? `${fmt(p.price)} ₴` : '—'}</span>
             </label>
           );
         })}
       </div>
 
       <div className="bundle-summary">
+        {/* Великий акцент на економії */}
+        {discount > 0 ? (
+          <div className="bundle-save">
+            <span className="bundle-save-label">Ваша економія</span>
+            <span className="bundle-save-value">{fmt(discount)} ₴</span>
+          </div>
+        ) : (
+          <div className="bundle-save bundle-save-muted">
+            <span className="bundle-save-label">Оберіть товари, щоб отримати знижку</span>
+          </div>
+        )}
+
         {tiers.length > 0 && (
           <div className="bundle-tiers">
             <span>Знижка за кількість:</span>
@@ -110,21 +121,42 @@ export default function BundleClient({
 
         <div className="bundle-row"><span>Обрано {chosen.length} товарів</span><span>{fmt(subtotal)} ₴</span></div>
         {discount > 0 && (
-          <div className="bundle-row bundle-discount"><span>Знижка{tier && tier.type === 'percent' ? ` −${tier.value}%` : ''}</span><span>−{fmt(discount)} ₴</span></div>
+          <div className="bundle-row bundle-discount">
+            <span>Знижка{tier && tier.type === 'percent' ? ` −${tier.value}%` : ''}</span>
+            <span>−{fmt(discount)} ₴</span>
+          </div>
         )}
         <div className="bundle-row bundle-total"><span>До сплати</span><span>{fmt(total)} ₴</span></div>
 
-        {next && (
+        {next && chosen.length > 0 && (
           <p className="bundle-hint">
-            Додайте ще {next.min - chosen.length} {next.min - chosen.length === 1 ? 'товар' : 'товари'} → знижка{' '}
+            🎁 Додайте ще {next.min - chosen.length} {next.min - chosen.length === 1 ? 'товар' : 'товари'} → знижка{' '}
             {next.type === 'percent' ? `−${next.value}%` : `−${fmt(next.value)} ₴`}
           </p>
         )}
 
         <button className="bundle-btn" onClick={addBundle} disabled={chosen.length === 0}>
-          {added ? '✓ Додано в кошик' : 'Додати набір у кошик'}
+          {added ? '✓ Додано в кошик' : `Додати набір у кошик · ${fmt(total)} ₴`}
         </button>
         {added && <a href="/cart" className="bundle-tocart">Перейти в кошик →</a>}
+
+        {/* Елементи довіри */}
+        <div className="bundle-trust">
+          {allInStock && <span><b>✓</b> Усі товари в наявності</span>}
+          <span><b>🚚</b> Доставка Новою Поштою по Україні</span>
+          <span><b>🛡️</b> Гарантія та офіційна якість</span>
+        </div>
+      </div>
+
+      {/* Липка кнопка для мобільного */}
+      <div className="bundle-sticky">
+        <div className="bundle-sticky-info">
+          <span className="bundle-sticky-total">{fmt(total)} ₴</span>
+          {discount > 0 && <span className="bundle-sticky-save">економія {fmt(discount)} ₴</span>}
+        </div>
+        <button className="bundle-sticky-btn" onClick={addBundle} disabled={chosen.length === 0}>
+          {added ? '✓ Додано' : 'У кошик'}
+        </button>
       </div>
     </div>
   );
