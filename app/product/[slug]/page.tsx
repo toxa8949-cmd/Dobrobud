@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getProductBySlug, getRelatedProducts } from '@/lib/supabase';
 import BuyBox from '@/components/BuyBox';
@@ -6,6 +7,40 @@ import CatalogGrid from '@/components/CatalogGrid';
 export const revalidate = 3600;
 
 const fmt = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const p = await getProductBySlug(slug);
+  if (!p) return { title: 'Товар — Добробуд' };
+
+  // Опис для пошуку: беремо з опису товару (перші ~155 символів) або генеруємо
+  const plain = (p.description || '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const desc =
+    plain.length > 30
+      ? plain.slice(0, 155)
+      : `Купити ${p.title}${p.brand ? ` (${p.brand})` : ''} за ціною ${p.price ? fmt(p.price) + ' ₴' : 'від магазину'}. Доставка по Україні, оригінал, гарантія. Магазин Добробуд.`;
+
+  const title = `${p.title}${p.brand ? ` — ${p.brand}` : ''} | Добробуд`;
+  const image = p.images?.[0];
+
+  return {
+    title,
+    description: desc,
+    openGraph: {
+      title,
+      description: desc,
+      type: 'website',
+      images: image ? [{ url: image }] : undefined,
+    },
+  };
+}
 
 const SPEC_LABELS: Record<string, string> = {
   speed_kmh: 'Максимальна швидкість',
@@ -66,8 +101,31 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
     });
 
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: p.title,
+    image: p.images?.length ? p.images : undefined,
+    description: (p.description || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 300) || p.title,
+    brand: p.brand ? { '@type': 'Brand', name: p.brand } : undefined,
+    offers: p.price
+      ? {
+          '@type': 'Offer',
+          price: p.price,
+          priceCurrency: 'UAH',
+          availability: p.in_stock
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+        }
+      : undefined,
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <nav className="breadcrumbs">
         <a href="/">Головна</a>
         <span>/</span>
@@ -99,7 +157,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             {p.in_stock ? '✓ В наявності' : 'Немає в наявності'}
           </div>
 
-          <BuyBox id={p.id} slug={p.slug} title={p.title} price={p.price ?? 0} inStock={p.in_stock} />
+          <BuyBox id={p.id} slug={p.slug} title={p.title} price={p.price ?? 0} inStock={p.in_stock} image={p.images?.[0]} />
 
           <div className="perks">
             <div className="perk"><span className="perk-ico">🚚</span><div><strong>Доставка по Україні</strong><span>Нова Пошта або самовивіз</span></div></div>
