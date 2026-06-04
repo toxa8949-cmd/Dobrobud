@@ -33,9 +33,14 @@ export default async function BundlePage({
         <span className="bundle-count">{b.products.length} товарів у наборі</span>
       </div>
 
-      {b.description && <BundleDescription text={b.description} />}
-
       <BundleClient products={b.products} tiers={b.discount_tiers} />
+
+      {b.description && (
+        <>
+          <h2 className="bundle-desc-title">Про набір</h2>
+          <BundleDescription text={b.description} />
+        </>
+      )}
     </div>
   );
 }

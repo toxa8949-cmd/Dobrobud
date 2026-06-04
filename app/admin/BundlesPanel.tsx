@@ -229,7 +229,12 @@ export default function BundlesPanel({ headers }: { headers: () => HeadersInit }
         <div className="adm-articles">
           {bundles.map((b) => (
             <div className="adm-article" key={b.id}>
-              <span className="adm-article-emoji">{b.emoji}</span>
+              {b.image ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className="adm-article-thumb" src={b.image} alt="" />
+              ) : (
+                <span className="adm-article-emoji">{b.emoji}</span>
+              )}
               <div className="adm-article-info">
                 <strong>{b.title}</strong>
                 <span className="adm-article-slug">/set/{b.slug} · {b.product_ids?.length ?? 0} товарів · {(b.discount_tiers?.length ?? 0)} рівнів знижки {!b.published && '· чернетка'}</span>

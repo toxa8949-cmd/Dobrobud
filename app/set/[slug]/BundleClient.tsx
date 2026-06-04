@@ -73,11 +73,22 @@ export default function BundleClient({
                 )}
               </span>
               <span className="bundle-item-info">
-                <a href={`/product/${p.slug}`} className="bundle-item-title">{p.title}</a>
+                <span className="bundle-item-title">{p.title}</span>
                 {p.brand && <span className="bundle-item-brand">{p.brand}</span>}
                 {disabled && <span className="bundle-item-out">Немає в наявності</span>}
               </span>
-              <span className="bundle-item-price">{p.price ? `${fmt(p.price)} ₴` : '—'}</span>
+              <span className="bundle-item-right">
+                <span className="bundle-item-price">{p.price ? `${fmt(p.price)} ₴` : '—'}</span>
+                <a
+                  href={`/product/${p.slug}`}
+                  className="bundle-item-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Детальніше →
+                </a>
+              </span>
             </label>
           );
         })}
