@@ -315,6 +315,13 @@ a { color: inherit; text-decoration: none; }
 
 /* Список категорій у фільтрах */
 .filter-cats { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; max-height: 340px; overflow-y: auto; }
+.filter-sections { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.filter-sections a {
+  display: block; padding: 11px 14px; border-radius: 10px; font-size: 14px; font-weight: 600;
+  background: var(--bg); color: var(--ink); border: 1px solid transparent; transition: all .12s;
+}
+.filter-sections a:hover { border-color: var(--green-bright); }
+.filter-sections a.active { background: var(--green-bright); color: #fff; }
 .filter-cats::-webkit-scrollbar { width: 6px; }
 .filter-cats::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
 .filter-cats button {

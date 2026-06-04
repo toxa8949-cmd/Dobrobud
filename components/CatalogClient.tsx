@@ -29,8 +29,32 @@ export default function CatalogFilters({ options }: { options: FilterOptions }) 
   const reset = () => router.push(pathname);
   const fmt = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
 
+  // Поточний розділ із шляху (/catalog/etransport → etransport)
+  const currentType = pathname.split('/')[2] ?? '';
+  const SECTIONS = [
+    { type: 'etransport', label: '🚲 Транспорт' },
+    { type: 'chemistry', label: '🧴 Автохімія' },
+    { type: 'tools', label: '🔧 Інструмент' },
+  ];
+
   return (
     <aside className="filters">
+      <div className="filter-group">
+        <label>Розділи</label>
+        <ul className="filter-sections">
+          {SECTIONS.map((s) => (
+            <li key={s.type}>
+              <a
+                className={currentType === s.type ? 'active' : ''}
+                href={`/catalog/${s.type}`}
+              >
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
       {options.subcatCounts.length > 0 && (
         <div className="filter-group">
           <label>Категорії</label>
