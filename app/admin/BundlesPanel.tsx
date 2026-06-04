@@ -139,8 +139,8 @@ export default function BundlesPanel({ headers }: { headers: () => HeadersInit }
         <label className="adm-field"><span>URL (slug) — порожнім для авто</span>
           <input value={edit.slug ?? ''} onChange={(e) => setEdit({ ...edit, slug: e.target.value })} placeholder="nabir-dlya-myttya" />
         </label>
-        <label className="adm-field"><span>Опис набору</span>
-          <textarea rows={2} value={edit.description ?? ''} onChange={(e) => setEdit({ ...edit, description: e.target.value })} />
+        <label className="adm-field"><span>Опис набору (кожен пункт — з нового рядка, списки починайте з •)</span>
+          <textarea rows={6} value={edit.description ?? ''} onChange={(e) => setEdit({ ...edit, description: e.target.value })} placeholder={'Професійний набір автохімії для миття авто.\n\nЩо входить:\n• Автошампунь з воском\n• Концентрат для ручного миття\n\nПереваги:\n• Захищає кузов\n• Глибокий блиск'} />
         </label>
 
         <div className="adm-field">
