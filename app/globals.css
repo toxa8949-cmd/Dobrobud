@@ -1175,3 +1175,111 @@ a { color: inherit; text-decoration: none; }
   .bundle { padding-bottom: 80px; }
   /* десктопну кнопку в підсумку лишаємо, але на моб вона теж видима — це ок */
 }
+
+/* ════════════════════════════════════════════════
+   ПОВНА МОБІЛЬНА АДАПТАЦІЯ (єдиний блок)
+   ════════════════════════════════════════════════ */
+
+/* Базове: ніколи не дозволяємо горизонтальний скрол */
+html, body { max-width: 100%; overflow-x: hidden; }
+* { min-width: 0; }
+img { max-width: 100%; height: auto; }
+
+/* ── Планшети й телефони ── */
+@media (max-width: 768px) {
+  .container { padding: 16px 14px; }
+
+  /* Меню переходить у бургер раніше — щоб не тиснути */
+  .header-nav { display: none; }
+  .burger { display: block; }
+  .mobile-menu { display: flex; }
+
+  /* Заголовки трохи менші */
+  h1 { font-size: 26px; }
+  .section-head h2 { font-size: 18px; }
+  .section-head { margin: 24px 0 14px; }
+
+  /* Сітка товарів — 2 колонки */
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .catalog-main .grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Каталог: фільтри згортаються */
+  .catalog-layout { grid-template-columns: 1fr; gap: 16px; }
+  .filters { position: static; padding: 0; border: none; background: none; gap: 0; }
+  .filters-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; padding: 13px 16px; background: var(--card); border: 1px solid var(--line);
+    border-radius: var(--radius); font-size: 15px; font-weight: 600; color: var(--ink); cursor: pointer;
+  }
+  /* вміст фільтрів схований, поки не відкрито */
+  .filters > *:not(.filters-toggle) { display: none; }
+  .filters.filters-open {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 16px; gap: 16px; flex-direction: column;
+  }
+  .filters.filters-open > * { display: flex; }
+  .filters.filters-open .filters-toggle { padding: 0 0 12px; border: none; border-bottom: 1px solid var(--line); border-radius: 0; }
+  .filter-group { width: 100%; }
+
+  /* Товар: одна колонка */
+  .product { grid-template-columns: 1fr; gap: 20px; }
+  .product-gallery { height: 300px; }
+  .product-details { grid-template-columns: 1fr; gap: 24px; }
+  .buybox { flex-wrap: wrap; }
+  .buybox .buy-btn { min-width: 0; width: 100%; }
+
+  /* Кошик */
+  .cart-layout { grid-template-columns: 1fr; gap: 18px; }
+  .cart-checkout { position: static; }
+
+  /* Hero */
+  .hero { padding: 24px 16px; }
+  .hero-grid { grid-template-columns: 1fr; gap: 24px; }
+  .hero-title { font-size: 28px; }
+  .hero-card { max-width: 100%; }
+
+  /* Набір: одна колонка, панель не липне */
+  .bundle { grid-template-columns: 1fr; }
+  .bundle-summary { position: static; }
+
+  /* Категорії, футер, інше */
+  .mcats { grid-template-columns: repeat(2, 1fr); }
+  .topcats-grid { grid-template-columns: repeat(2, 1fr); }
+  .footer-cols { grid-template-columns: 1fr 1fr; gap: 20px; }
+  .about-grid, .about-cats { grid-template-columns: 1fr; }
+  .trust-row { grid-template-columns: 1fr 1fr; }
+  .home-top { grid-template-columns: 1fr; }
+  .home-promos-row { grid-template-columns: 1fr; }
+
+  /* Блог */
+  .blog-grid { grid-template-columns: 1fr; gap: 14px; }
+  .article { padding: 0 2px; }
+  .article h1 { font-size: 24px; }
+
+  /* Адмінка */
+  .adm-prod-row { grid-template-columns: 1fr auto; }
+}
+
+/* ── Малі телефони ── */
+@media (max-width: 480px) {
+  .container { padding: 14px 12px; }
+  h1 { font-size: 23px; }
+  .hero-title { font-size: 25px; }
+
+  /* Товари в один стовпчик на дуже вузьких — зручніше тапати */
+  .grid, .catalog-main .grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+  /* Категорії в один стовпчик */
+  .mcats, .topcats-grid { grid-template-columns: 1fr; }
+  .footer-cols { grid-template-columns: 1fr; gap: 18px; }
+  .trust-row { grid-template-columns: 1fr; }
+
+  /* Кнопки на всю ширину */
+  .hero-btns { flex-direction: column; }
+  .hero-btn-primary, .hero-btn-ghost { width: 100%; text-align: center; }
+
+  /* Картка товару компактніша */
+  .card-body { padding: 10px; }
+  .card-title { font-size: 13px; }
+  .card-price { font-size: 15px; }
+}

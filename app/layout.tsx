@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { CartProvider } from '@/lib/cart';
 import Header from '@/components/Header';
@@ -7,6 +7,12 @@ export const metadata: Metadata = {
   title: 'Добробуд — електротранспорт, автохімія, інструмент',
   description:
     'Електросамокати, велосипеди, автохімія та електроінструмент з доставкою по Україні.',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -30,14 +36,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               </div>
               <div>
                 <h4>Інформація</h4>
-                <a href="#">Про магазин</a>
-                <a href="#">Доставка та оплата</a>
-                <a href="#">Контакти</a>
+                <a href="/about">Про магазин</a>
+                <a href="/delivery">Доставка та оплата</a>
+                <a href="/about">Контакти</a>
               </div>
               <div>
                 <h4>Зв&apos;язок</h4>
-                <a href="#">+38 (0XX) XXX-XX-XX</a>
-                <a href="#">info@dobrobud.ua</a>
+                <a href="tel:+380674100159">+38 067 410 0159</a>
+                <a href="https://t.me/ProkopenkoVasyl" target="_blank" rel="noopener noreferrer">Telegram</a>
+                <a href="https://www.tiktok.com/@pvmorgan" target="_blank" rel="noopener noreferrer">TikTok</a>
               </div>
             </div>
             <div className="footer-bottom">© {new Date().getFullYear()} Добробуд</div>

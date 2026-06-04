@@ -1,13 +1,14 @@
 'use client';
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import type { FilterOptions } from '@/lib/supabase';
 
 export default function CatalogFilters({ options }: { options: FilterOptions }) {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
+  const [open, setOpen] = useState(false);
 
   const update = useCallback(
     (key: string, value: string) => {
@@ -38,7 +39,11 @@ export default function CatalogFilters({ options }: { options: FilterOptions }) 
   ];
 
   return (
-    <aside className="filters">
+    <aside className={`filters ${open ? 'filters-open' : ''}`}>
+      <button type="button" className="filters-toggle" onClick={() => setOpen((v) => !v)}>
+        <span>🔧 Фільтри</span>
+        <span>{open ? '▲' : '▼'}</span>
+      </button>
       <div className="filter-group">
         <label>Розділи</label>
         <ul className="filter-sections">
