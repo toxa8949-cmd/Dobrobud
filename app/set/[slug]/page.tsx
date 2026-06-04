@@ -44,7 +44,14 @@ export default async function BundlePage({
         )}
       </div>
 
-      <BundleClient products={b.products} tiers={b.discount_tiers} />
+      <BundleClient
+        bundleId={b.id}
+        bundleTitle={b.title}
+        bundleSlug={b.slug}
+        bundleImage={b.image}
+        products={b.products}
+        tiers={b.discount_tiers}
+      />
 
       {b.description && (
         <>

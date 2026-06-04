@@ -10,6 +10,8 @@ export interface CartItem {
   qty: number;
   image?: string;
   oldPrice?: number; // оригінальна ціна (для показу економії від набору)
+  kind?: 'product' | 'bundle';
+  bundleItems?: { title: string; qty: number }[]; // склад набору (для показу в кошику)
 }
 
 interface CartContextValue {
@@ -17,6 +19,7 @@ interface CartContextValue {
   count: number;
   total: number;
   add: (item: Omit<CartItem, 'qty'>, qty?: number) => void;
+  addBundle: (bundle: Omit<CartItem, 'qty' | 'kind'>) => void;
   remove: (id: number) => void;
   setQty: (id: number, qty: number) => void;
   clear: () => void;
@@ -56,7 +59,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (existing) {
         return prev.map((i) => (i.id === item.id ? { ...i, qty: i.qty + qty } : i));
       }
-      return [...prev, { ...item, qty }];
+      return [...prev, { ...item, qty, kind: item.kind ?? 'product' }];
+    });
+  }, []);
+
+  // Додати набір як ОДНУ позицію (видаляється цілком, знижка не ламається)
+  const addBundle = useCallback((bundle: Omit<CartItem, 'qty' | 'kind'>) => {
+    setItems((prev) => {
+      const existing = prev.find((i) => i.id === bundle.id && i.kind === 'bundle');
+      if (existing) {
+        return prev.map((i) =>
+          i.id === bundle.id && i.kind === 'bundle' ? { ...i, qty: i.qty + 1 } : i
+        );
+      }
+      return [...prev, { ...bundle, qty: 1, kind: 'bundle' }];
     });
   }, []);
 
@@ -76,7 +92,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const total = items.reduce((s, i) => s + i.price * i.qty, 0);
 
   return (
-    <CartContext.Provider value={{ items, count, total, add, remove, setQty, clear }}>
+    <CartContext.Provider value={{ items, count, total, add, addBundle, remove, setQty, clear }}>
       {children}
     </CartContext.Provider>
   );

@@ -8,13 +8,21 @@ import type { Product } from '@/lib/supabase';
 const fmt = (n: number) => new Intl.NumberFormat('uk-UA').format(n);
 
 export default function BundleClient({
+  bundleId,
+  bundleTitle,
+  bundleSlug,
+  bundleImage,
   products,
   tiers,
 }: {
+  bundleId: number;
+  bundleTitle: string;
+  bundleSlug: string;
+  bundleImage?: string | null;
   products: Product[];
   tiers: DiscountTier[];
 }) {
-  const { add } = useCart();
+  const { addBundle: addBundleToCart } = useCart();
   const [selected, setSelected] = useState<Set<number>>(
     () => new Set(products.filter((p) => p.in_stock && p.price).map((p) => p.id))
   );
@@ -43,18 +51,16 @@ export default function BundleClient({
 
   const addBundle = () => {
     if (chosen.length === 0) return;
-    const ratio = subtotal > 0 ? total / subtotal : 1;
-    chosen.forEach((p) => {
-      const orig = p.price ?? 0;
-      const discounted = Math.round(orig * ratio);
-      add({
-        id: p.id,
-        slug: p.slug,
-        title: p.title,
-        price: discounted,
-        oldPrice: discounted < orig ? orig : undefined,
-        image: p.images?.[0],
-      }, 1);
+    // Набір — ОДНА позиція в кошику. Видаляється цілком, знижка не ламається.
+    // Унікальний id набору: від'ємний, щоб не конфліктувати з товарами.
+    addBundleToCart({
+      id: -1000000 - bundleId,
+      slug: bundleSlug,
+      title: `Набір «${bundleTitle}» (${chosen.length} тов.)`,
+      price: total,
+      oldPrice: discount > 0 ? subtotal : undefined,
+      image: bundleImage || chosen[0]?.images?.[0],
+      bundleItems: chosen.map((p) => ({ title: p.title, qty: 1 })),
     });
     setAdded(true);
   };

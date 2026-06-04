@@ -91,12 +91,19 @@ export default function CartPage() {
                 )}
               </span>
               <div className="cart-row-info">
-                <a href={`/product/${i.slug}`} className="cart-row-title">{i.title}</a>
+                <a href={i.kind === 'bundle' ? `/set/${i.slug}` : `/product/${i.slug}`} className="cart-row-title">{i.title}</a>
+                {i.kind === 'bundle' && i.bundleItems && (
+                  <ul className="cart-row-bundle">
+                    {i.bundleItems.map((bi, j) => (
+                      <li key={j}>{bi.title}</li>
+                    ))}
+                  </ul>
+                )}
                 <span className="cart-row-price">
                   {i.oldPrice && i.oldPrice > i.price && (
                     <span className="cart-row-old">{fmt(i.oldPrice)} ₴</span>
                   )}
-                  {fmt(i.price)} ₴ / шт
+                  {fmt(i.price)} ₴ {i.kind === 'bundle' ? '/ набір' : '/ шт'}
                 </span>
               </div>
               <div className="cart-qty">
